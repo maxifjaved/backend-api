@@ -4,20 +4,9 @@ var userValidation = require('../validations').users
 var User = mongoose.model('User')
 
 function createUserProfile(req, res, next) {
-    var validations = userValidation.createUserProfile(req.body)
-    var errors = validations.errors, isValid = validations.isValid
-    var firstName = req.body.firstName,
-        lastName = req.body.lastName,
-        username = req.body.username,
-        email = req.body.email,
-        gender = req.body.gender,
-        state = req.body.state,
-        zip = req.body.zip,
-        country = req.body.country
-
-
+    const { errors, isValid } = userValidation.createUserProfile(req.body)
+    const { firstName, lastName, username, email, gender, state, zip, country, } = req.body
     if (!isValid) return res.status(403).json({ errors })
-
 
     User.findOne({ $or: [{ email: email }, { username: username }] }, (err, user) => {
         if (err) return res.status(500).json({ errors: err })
@@ -32,21 +21,9 @@ function createUserProfile(req, res, next) {
 
             return res.status(403).json({ errors })
         }
-
-        let newUser = new User({
-            firstName: firstName,
-            lastName: lastName,
-            username: username,
-            email: email,
-            gender: gender,
-            state: state,
-            zip: zip,
-            country: country
-        })
-
+        let newUser = new User({ firstName, lastName, username, email, gender, state, zip, country })
         newUser.save((err, savedUser) => {
             if (err) return res.status(500).json({ errors: err })
-
 
             return res.status(200).json({ user: savedUser })
         })
