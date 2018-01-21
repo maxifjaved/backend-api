@@ -8,7 +8,7 @@ var userSchema = new Schema({
     username: { type: String, lowercase: true, required: true },
     email: { type: String, lowercase: true, required: true },
     active: { type: Boolean, default: false },
-    picture: { type: String },
+    picture: [{ type: Schema.Types.ObjectId, ref: 'Picture' }],
     userType: { type: String, default: 'user' },
     gender: { type: String },
     state: { type: String },

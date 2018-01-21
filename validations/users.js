@@ -1,8 +1,8 @@
-var isEmpty = require('../helpers/isEmpty')
-var isEmail = require('../helpers/isEmail')
+const isEmpty = require('../helpers/isEmpty')
+const isEmail = require('../helpers/isEmail')
 
 function createUserProfile(data) {
-    var errors = {}
+    let errors = {}
 
     if (!data.firstName) {
         errors.firstName = 'First Name field is required'

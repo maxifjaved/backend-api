@@ -1,10 +1,13 @@
-var express = require('express')
-var router = express.Router()
+const express = require('express')
+const router = express.Router()
 
-var users = require('./users')
+const users = require('./users')
+const pictures = require('./pictures')
+
 /** GET /health-check - Check service health */
-router.get('/health-check', function (req, res) { res.send('OK') })
+router.get('/health-check', (req, res) => res.send('OK'))
 
 router.use('/users', users)
+router.use('/pictures', pictures)
 
 module.exports = router

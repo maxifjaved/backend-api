@@ -1,5 +1,4 @@
-var userController = require('./users.js')
+const users = require('./users')
+const pictures = require('./pictures')
 
-module.exports = {
-    users: userController,
-}
+module.exports = { users, pictures }

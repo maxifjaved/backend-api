@@ -1,5 +1,4 @@
-var users = require('./users')
+const users = require('./users')
+const pictures = require('./pictures')
 
-module.exports = {
-    users: users,
-}
+module.exports = { users, pictures }
