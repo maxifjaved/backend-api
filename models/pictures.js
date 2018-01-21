@@ -1,9 +1,8 @@
-var mongoose = require('mongoose')
+const mongoose = require('mongoose')
 const User = mongoose.model('User')
+const Schema = mongoose.Schema
 
-var Schema = mongoose.Schema
-
-var PictureSchema = new Schema({
+const PictureSchema = new Schema({
     title: { type: String, required: true },
     description: { type: String, required: true },
     url: { type: String, required: true },
@@ -12,16 +11,6 @@ var PictureSchema = new Schema({
     createdAt: { type: Date, default: Date.now },
     updatedAt: { type: Date, default: Date.now }
 })
-
-// PictureSchema.pre('remove', function (next) {
-//     var picture = this
-//     console.log('5a64430d8ce6242c94069c1b')
-//     User.update(
-//         { picture: picture._id },
-//         { $pull: { picture: picture._id } },
-//         { multi: true },
-//         next)
-// })
 
 
 module.exports = mongoose.model('Picture', PictureSchema)

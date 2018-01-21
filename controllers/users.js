@@ -1,14 +1,14 @@
-var mongoose = require('mongoose')
+const mongoose = require('mongoose')
 
-var userValidation = require('../validations').users
-var User = mongoose.model('User')
+const userValidation = require('../validations').users
+const User = mongoose.model('User')
 
 function createUserProfile(req, res, next) {
     const { errors, isValid } = userValidation.createUserProfile(req.body)
     if (!isValid) return res.status(403).json({ errors })
 
     const { firstName, lastName, username, email, gender, state, zip, country, } = req.body
-    
+
     User.findOne({ $or: [{ email: email }, { username: username }] }, (err, user) => {
         if (err) return res.status(500).json({ errors: err })
 

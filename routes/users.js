@@ -1,7 +1,7 @@
-var express = require('express');
-var router = express.Router();
+const express = require('express')
+const router = express.Router()
 
-var users = require('../controllers').users
+const users = require('../controllers').users
 
 router.route('/')
   .get(users.getAllUsers)
@@ -13,4 +13,5 @@ router.route('/:id')
   .get(users.getUserProfile)
   .patch(users.updateUserProfile)
   .delete(users.deleteUserProfile)
-module.exports = router;
+
+module.exports = router

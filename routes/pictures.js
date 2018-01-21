@@ -1,5 +1,5 @@
-const express = require('express');
-const router = express.Router();
+const express = require('express')
+const router = express.Router()
 const pictures = require('../controllers').pictures
 
 router.route('/')
@@ -16,4 +16,4 @@ router.route('/:id')
     .patch(pictures.updatePicture)
     .delete(pictures.deletePicture)
 
-module.exports = router;
+module.exports = router
