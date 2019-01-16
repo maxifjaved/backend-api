@@ -1,3 +1,4 @@
+import mongoose from 'mongoose'
 import { Router } from 'express';
 import passport from "passport";
 import authenticate from '../middlewares/authenticate';
@@ -7,6 +8,30 @@ import authenticate from '../middlewares/authenticate';
 
 const router = Router();
 const User = mongoose.model('User');
+
+router.post('/signup', async (req, res, next) => {
+    const { username, email, password } = req.body;
+    try {
+        let user = new User();
+        user.username = username;
+        user.email = email;
+        user.setPassword(password);
+        await user.save();
+
+        return res.status(200).json({ user: user.toAuthJSON() })
+    } catch (error) {
+
+    }
+    // 
+
+
+
+    // user.save().then(function () {
+    //   return res.json({ user: user.toAuthJSON() });
+    // }).catch(next);
+
+})
+
 
 router.post('/login-via-local', (req, res, next) => {
     passport.authenticate('local', (err, user, info) => {

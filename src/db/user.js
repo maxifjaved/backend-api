@@ -1,8 +1,8 @@
-import mongoose, { Schema } from 'mongoose'
+import mongoose from 'mongoose'
 import crypto from 'crypto'
 import jwt from 'jsonwebtoken'
 
-let UserSchema = new Schema({
+let UserSchema = new mongoose.Schema({
     username: { type: String, lowercase: true, unique: true, required: true, index: true },
     email: { type: String, lowercase: true, unique: true, required: true, index: true },
     role: { type: String, enum: ['user', 'admin'], default: 'user', lowercase: true, required: true },
