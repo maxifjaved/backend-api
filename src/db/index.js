@@ -6,3 +6,5 @@ const DB_URI = (process.env.NODE_ENV === 'test' ? process.env.TEST_DB_URI : proc
 mongoose.Promise = global.Promise;
 mongoose.connect(DB_URI, { useNewUrlParser: true });
 
+
+import './user'

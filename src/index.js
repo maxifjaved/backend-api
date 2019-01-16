@@ -39,6 +39,7 @@ app.locals.version = process.env.APP_VERSION;
 app.use(Sentry.Handlers.requestHandler());
 
 app.use(favicon(path.join(__dirname, '/../public', 'favicon.ico')));
+app.use(express.static(path.join(__dirname, '/../public')));
 app.use(cors());
 app.use(helmet());
 app.use(compression());

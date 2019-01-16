@@ -33,3 +33,4 @@ coverage
 
 # Vim swp files
 *.swp
+public/uploads/*
