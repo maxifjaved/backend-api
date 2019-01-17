@@ -9,8 +9,19 @@ export function signup(data) {
         errors.email = 'This field is required';
     }
 
+    if (Validator.isNull(data.username)) {
+        errors.username = 'This field is required';
+    }
+
     if (Validator.isNull(data.password)) {
         errors.password = 'This field is required';
+    }
+    if (Validator.isNull(data.confirmationPassword)) {
+        errors.confirmationPassword = 'This field is required';
+    }
+
+    if (!errors.password && !Validator.equals(data.password, data.confirmationPassword)) {
+        errors.confirmationPassword = 'Password not matched.';
     }
 
     return {
