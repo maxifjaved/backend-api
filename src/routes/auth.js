@@ -1,77 +1,57 @@
 import mongoose from 'mongoose'
 import { Router } from 'express';
 import passport from "passport";
+import isEmpty from 'lodash/isEmpty';
+
 import authenticate from '../middlewares/authenticate';
 import { signup } from '../validations/auth'
+
 // import * as userController from '../controllers/users';
 // import { findUser, userValidator } from '../validators/userValidator';
 
 const router = Router();
 const User = mongoose.model('User');
 
-function validateInput(data, otherValidations) {
+async function validateInput(data, otherValidations) {
     const { errors } = otherValidations(data);
 
-    const p = new Promise((resolve, reject) => {
-        User.findOne({
-            $or: [
-                {
-                    email: data.email,
-                }, {
-                    username: data.username,
-                },
-            ],
-        }, (err, user) => {
-            if (err) { reject(err); }
+    try {
+        let user = await User.findOne({ $or: [{ email: data.email.toLowerCase() }, { username: data.username.toLowerCase() }] })
 
-            if (user) {
-                if (user.get('username') === data.username) {
-                    errors.username = 'There is user with such username';
-                }
-                if (user.get('email') === data.email) {
-                    errors.email = 'There is user with such email';
-                }
-                reject({ errors, isValid: isEmpty(errors) });
-            } else {
-                resolve({ errors, isValid: isEmpty(errors) });
+        if (user) {
+            if (user.username === data.username.toLowerCase()) {
+                errors.username = 'There is user with such username';
             }
-        });
-    });
-    return p;
+            if (user.email === data.email.toLowerCase()) {
+                errors.email = 'There is user with such email';
+            }
+        }
+
+        return { errors, isValid: isEmpty(errors) }
+
+    } catch (error) {
+        return { errors: { ...errors, ...error }, isValid: isEmpty({ ...errors, ...error }) }
+    }
 }
 
 
 
 router.post('/signup', async (req, res, next) => {
-    validateInput(req.body, signup).then(({ errors, isValid }) => {
-        if (isValid) {
-            const { username, email, password } = req.body;
-            try {
-                let user = new User();
-                user.username = username;
-                user.email = email;
-                user.setPassword(password);
-                await user.save();
+    try {
+        const { errors, isValid } = await validateInput(req.body, signup)
+        if (!isValid) { return res.status(500).json({ errors }) }
 
-                return res.status(200).json({ user: user.toAuthJSON() })
-            } catch (error) {
+        const { username, email, password } = req.body;
 
-            }
-        }
-
-        // 
-    }).catch(({ errors }) => {
-        res
-            .status(403)
-            .json(errors);
-    });
-
-
-
-    // user.save().then(function () {
-    //   return res.json({ user: user.toAuthJSON() });
-    // }).catch(next);
-
+        let user = new User();
+        user.username = username;
+        user.email = email;
+        user.setPassword(password);
+        await user.save();
+        return res.status(200).json({ user: user.toAuthJSON() })
+    } catch (error) {
+        return res.status(500).json({ errors: error, message: 'Oops, something happen bad while proccessing your requset.' })
+    }
 })
 
 

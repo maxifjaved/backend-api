@@ -5,22 +5,22 @@ import isEmpty from 'lodash/isEmpty';
 export function signup(data) {
     const errors = {};
 
-    if (Validator.isNull(data.email)) {
+    if (!data.email || Validator.isEmpty(data.email)) {
         errors.email = 'This field is required';
     }
 
-    if (Validator.isNull(data.username)) {
+    if (!data.username || Validator.isEmpty(data.username)) {
         errors.username = 'This field is required';
     }
 
-    if (Validator.isNull(data.password)) {
+    if (!data.password || Validator.isEmpty(data.password)) {
         errors.password = 'This field is required';
     }
-    if (Validator.isNull(data.confirmationPassword)) {
+    if (!data.confirmationPassword || Validator.isEmpty(data.confirmationPassword)) {
         errors.confirmationPassword = 'This field is required';
     }
 
-    if (!errors.password && !Validator.equals(data.password, data.confirmationPassword)) {
+    if (!errors.password && !errors.confirmationPassword && !Validator.equals(data.password, data.confirmationPassword)) {
         errors.confirmationPassword = 'Password not matched.';
     }
 

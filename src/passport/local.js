@@ -14,6 +14,7 @@ function passportLocal() {
             if (!user) return done(null, false, { form: 'Invalid Credentials.' })
 
             if (user && user.validPassword(password)) {
+                debugger
                 return done(null, user.toAuthJSON());
             } else {
                 return done(null, false, { form: 'Invalid Credentials.' })

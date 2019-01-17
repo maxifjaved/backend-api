@@ -37,7 +37,7 @@ UserSchema.methods.generateJWT = function () {
 };
 
 UserSchema.methods.fullname = function () {
-    return `${this.firstname} ${this.lastname}`
+    return `${this.firstname || ''} ${this.lastname || ''}`
 };
 
 UserSchema.methods.toAuthJSON = function () {

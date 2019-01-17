@@ -3,9 +3,10 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "start:dev": "nodemon --watch .env --watch src --exec babel-node src --source-maps",
+    "dev": "nodemon --watch .env --watch src --exec babel-node src --source-maps",
+    "inspect": "nodemon --debug --inspect --watch .env --watch src --exec babel-node src --source-maps",
     "build": "rimraf dist && babel src -D --out-dir dist",
-    "start": "node dist"
+    "prod": "node dist"
   },
   "dependencies": {
     "@sentry/node": "^4.4.1",
