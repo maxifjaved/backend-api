@@ -2,27 +2,69 @@ import mongoose from 'mongoose'
 import { Router } from 'express';
 import passport from "passport";
 import authenticate from '../middlewares/authenticate';
-
+import { signup } from '../validations/auth'
 // import * as userController from '../controllers/users';
 // import { findUser, userValidator } from '../validators/userValidator';
 
 const router = Router();
 const User = mongoose.model('User');
 
+function validateInput(data, otherValidations) {
+    const { errors } = otherValidations(data);
+
+    const p = new Promise((resolve, reject) => {
+        User.findOne({
+            $or: [
+                {
+                    email: data.email,
+                }, {
+                    username: data.username,
+                },
+            ],
+        }, (err, user) => {
+            if (err) { reject(err); }
+
+            if (user) {
+                if (user.get('username') === data.username) {
+                    errors.username = 'There is user with such username';
+                }
+                if (user.get('email') === data.email) {
+                    errors.email = 'There is user with such email';
+                }
+                reject({ errors, isValid: isEmpty(errors) });
+            } else {
+                resolve({ errors, isValid: isEmpty(errors) });
+            }
+        });
+    });
+    return p;
+}
+
+
+
 router.post('/signup', async (req, res, next) => {
-    const { username, email, password } = req.body;
-    try {
-        let user = new User();
-        user.username = username;
-        user.email = email;
-        user.setPassword(password);
-        await user.save();
+    validateInput(req.body, signup).then(({ errors, isValid }) => {
+        if (isValid) {
+            const { username, email, password } = req.body;
+            try {
+                let user = new User();
+                user.username = username;
+                user.email = email;
+                user.setPassword(password);
+                await user.save();
 
-        return res.status(200).json({ user: user.toAuthJSON() })
-    } catch (error) {
+                return res.status(200).json({ user: user.toAuthJSON() })
+            } catch (error) {
 
-    }
-    // 
+            }
+        }
+
+        // 
+    }).catch(({ errors }) => {
+        res
+            .status(403)
+            .json(errors);
+    });
 
 
 
