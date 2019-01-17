@@ -7,4 +7,4 @@ mongoose.Promise = global.Promise;
 mongoose.connect(DB_URI, { useNewUrlParser: true });
 
 
-import './user'
+import './models/user'
