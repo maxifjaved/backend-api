@@ -25,15 +25,14 @@ UserSchema.methods.setPassword = function (password) {
 };
 
 UserSchema.methods.generateConfirmationUrl = function () {
-    let confirmationToken = jwt.sign({ id: this._id }, process.env.CONFIRMATION_EMAIL_SECRET, { expiresIn: '1h' });
-    return `${process.env.FRONTEND_URL}/auth/confirm-email/${confirmationToken}`;
+    let token = jwt.sign({ id: this._id }, process.env.CONFIRMATION_EMAIL_SECRET, { expiresIn: '1h' });
+    return `${process.env.FRONTEND_URL}/auth/confirm-email/${token}`;
 };
 
 
-UserSchema.methods.generateResetPasswordToken = function () {
-    return jwt.sign({
-        id: this._id
-    }, process.env.JWT_SECRET, { expiresIn: '1h' });
+UserSchema.methods.generateResetPasswordUrl = function () {
+    let token = jwt.sign({ id: this._id }, process.env.RESET_PASSWORD_SECRET, { expiresIn: '1h' });
+    return `${process.env.FRONTEND_URL}/auth/new-password/${token}`;
 };
 
 UserSchema.methods.generateJWT = function () {

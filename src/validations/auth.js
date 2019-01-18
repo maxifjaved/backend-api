@@ -107,3 +107,29 @@ export function login(data) {
     };
 
 }
+
+export function resetPassword(data) {
+    const errors = {};
+
+    if (!data.password || Validator.isEmpty(data.password)) {
+        errors.password = 'This field is required';
+    }
+
+    if (!errors.password && !Validator.isLength(data.password, { min: 5 })) {
+        errors.password = 'Password must be of minimum 5 characters.';
+    }
+
+    if (!data.confirmationPassword || Validator.isEmpty(data.confirmationPassword)) {
+        errors.confirmationPassword = 'This field is required';
+    }
+
+    if (!errors.password && !errors.confirmationPassword && !Validator.equals(data.password, data.confirmationPassword)) {
+        errors.confirmationPassword = 'Password not matched.';
+    }
+
+    return {
+        errors,
+        isValid: isEmpty(errors),
+    };
+
+}

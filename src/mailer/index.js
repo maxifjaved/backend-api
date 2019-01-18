@@ -30,7 +30,7 @@ export async function sendConfirmationEmail(user) {
     return await tranport.sendMail(email);
 }
 
-export function sendResetPasswordEmail(user) {
+export async function sendResetPasswordEmail(user) {
     const email = {
         from,
         to: user.email,
@@ -41,5 +41,5 @@ export function sendResetPasswordEmail(user) {
     `
     };
 
-    tranport.sendMail(email);
+    return await tranport.sendMail(email);
 }

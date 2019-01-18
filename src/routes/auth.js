@@ -1,17 +1,15 @@
-import mongoose from 'mongoose'
-import { Router } from 'express';
-import passport from "passport";
-import isEmpty from 'lodash/isEmpty';
+import { Router } from 'express'
+import passport from "passport"
 
-import authenticate from '../middlewares/authenticate';
-import { signup, login } from '../validations/auth'
+import authenticate from '../middlewares/authenticate'
+import { signup, login, resetPassword } from '../validations/auth'
 
-import { createNewUser, updateUserById, getUserById } from '../db/controllers/user';
-import { decodToken } from '../helper';
+import { createNewUser, updateUserById, getUserById, getUserByIdentifier } from '../db/controllers/user'
+import { decodToken } from '../helper'
+import { sendResetPasswordEmail } from '../mailer'
 // import { findUser, userValidator } from '../validators/userValidator';
 
 const router = Router();
-const User = mongoose.model('User');
 
 
 
@@ -71,16 +69,34 @@ router.get('/confirm-email/:token', async (req, res) => {
     }
 });
 
-router.get('/reset-password/:identifier', (req, res) => {
+router.get('/reset-password/:identifier', async (req, res) => {
     const { identifier } = req.params;
 
-    User.findOne({ $or: [{ username: identifier.toLowerCase() }, { email: identifier.toLowerCase() }] }, (err, user) => {
-        if (err) { return res.status(400).json({ errors: { error: err, message: 'Internal Server Error. Contact Administrator for more information.' } }) };
+    try {
+        let user = await getUserByIdentifier(identifier);
+        if (!user) { return res.status(404).json({ errors: { message: 'User with such email/username doesn\'t exist in system.' } }); }
+        await sendResetPasswordEmail(user)
+        return res.status(200).json({ message: 'Password reset request proccessed successfully. Check your email.' })
+    } catch (error) {
+        return res.status(500).json({ errors: error.toString(), message: 'Oops, something happen bad while proccessing your requset.' })
+    }
+});
 
-        if (!user) return res.status(404).json({ errors: { message: 'User with such email/username doesn\'t exist in system.' } });
+router.post('/new-password/:token', async (req, res) => {
+    const { token } = req.params;
 
-        return res.status(200).json({ message: 'Send reset email is not implimented yet it is still inporgress...' })
-    });
+    try {
+        const { errors, isValid } = resetPassword(req.body)
+        if (!isValid) { return res.status(500).json({ errors }) }
+        let { password } = req.body
+        let decodedToken = await decodToken(token, process.env.RESET_PASSWORD_SECRET)
+        let { id } = decodedToken;
+
+        await updateUserById(id, { password })
+        return res.status(200).json({ message: 'Password reset successfully. Login with new password.' })
+    } catch (error) {
+        return res.status(500).json({ errors: error.toString(), message: 'Oops, something happen bad while proccessing your requset.' })
+    }
 });
 
 router.get('/currentUser', authenticate, async (req, res) => {
