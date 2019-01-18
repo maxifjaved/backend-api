@@ -23,6 +23,7 @@
     "lodash": "^4.17.11",
     "mongoose": "^5.4.4",
     "morgan": "^1.9.1",
+    "nodemailer": "^5.1.1",
     "passport": "^0.4.0",
     "serve-favicon": "^2.5.0",
     "swagger-jsdoc": "^3.2.6",

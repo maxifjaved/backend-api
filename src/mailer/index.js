@@ -6,30 +6,31 @@ function setup() {
     return nodemailer.createTransport({
         host: process.env.EMAIL_HOST,
         port: process.env.EMAIL_PORT,
+        secure: process.env.EMAIL_SECURE,
         auth: {
             user: process.env.EMAIL_USER,
             pass: process.env.EMAIL_PASS
         }
     });
 }
+const tranport = setup();
 
-export function sendConfirmationEmail(user) {
-    const tranport = setup();
+
+export async function sendConfirmationEmail(user) {
     const email = {
         from,
         to: user.email,
-        subject: "Welcome to Bookworm",
+        subject: "Welcome to Backend Api - Verify Email",
         text: `
     Welcome. Please, confirm your email.
     ${user.generateConfirmationUrl()}
     `
     };
 
-    tranport.sendMail(email);
+    return await tranport.sendMail(email);
 }
 
 export function sendResetPasswordEmail(user) {
-    const tranport = setup();
     const email = {
         from,
         to: user.email,

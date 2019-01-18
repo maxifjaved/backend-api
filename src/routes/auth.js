@@ -6,61 +6,23 @@ import isEmpty from 'lodash/isEmpty';
 import authenticate from '../middlewares/authenticate';
 import { signup } from '../validations/auth'
 
-import * as userController from '../db/controllers/user';
+import { createNewUser } from '../db/controllers/user';
 // import { findUser, userValidator } from '../validators/userValidator';
 
 const router = Router();
 const User = mongoose.model('User');
 
-async function validateInput(data, otherValidations) {
-    const { errors } = otherValidations(data);
-
-    try {
-        let userByEmail = await userController.getUserByIdentifier(data.email)
-        let userByUsername = await userController.getUserByIdentifier(data.username)
-
-        if (userByEmail) {
-            if (userByEmail.username === data.username.toLowerCase()) {
-                errors.username = 'There is user with such username';
-            }
-            if (userByEmail.email === data.email.toLowerCase()) {
-                errors.email = 'There is user with such email';
-            }
-        }
-
-        if (userByUsername) {
-            if (userByUsername.username === data.username.toLowerCase()) {
-                errors.username = 'There is user with such username';
-            }
-            if (userByUsername.email === data.email.toLowerCase()) {
-                errors.email = 'There is user with such email';
-            }
-        }
-
-        return { errors, isValid: isEmpty(errors) }
-
-    } catch (error) {
-        return { errors: { ...errors, ...error }, isValid: isEmpty({ ...errors, ...error }) }
-    }
-}
-
 
 
 router.post('/signup', async (req, res, next) => {
     try {
-        const { errors, isValid } = await validateInput(req.body, signup)
+        const { errors, isValid } = await signup(req.body)
         if (!isValid) { return res.status(500).json({ errors }) }
 
-        const { username, email, password } = req.body;
-
-        let user = new User();
-        user.username = username;
-        user.email = email;
-        user.setPassword(password);
-        await user.save();
+        let user = await createNewUser(req.body)
         return res.status(200).json({ user: user.toAuthJSON() })
     } catch (error) {
-        return res.status(500).json({ errors: error, message: 'Oops, something happen bad while proccessing your requset.' })
+        return res.status(500).json({ errors: error.toString(), message: 'Oops, something happen bad while proccessing your requset.' })
     }
 })
 

@@ -5,6 +5,7 @@ import jwt from 'jsonwebtoken'
 let UserSchema = new mongoose.Schema({
     username: { type: String, lowercase: true, unique: true, required: true, index: true },
     email: { type: String, lowercase: true, unique: true, required: true, index: true },
+    isUsed: { type: Boolean, default: false },
     role: { type: String, enum: ['user', 'admin'], default: 'user', lowercase: true, required: true },
     firstname: String,
     lastname: String,
@@ -22,6 +23,12 @@ UserSchema.methods.setPassword = function (password) {
     this.salt = crypto.randomBytes(16).toString('hex');
     this.hash = crypto.pbkdf2Sync(password, this.salt, 10000, 512, 'sha512').toString('hex');
 };
+
+UserSchema.methods.generateConfirmationUrl = function () {
+    let confirmationToken = jwt.sign({ id: this._id }, process.env.CONFIRMATION_EMAIL_SECRET, { expiresIn: '1h' });
+    return `${process.env.FRONTEND_URL}/auth/confirmation/${confirmationToken}`;
+};
+
 
 UserSchema.methods.generateResetPasswordToken = function () {
     return jwt.sign({
