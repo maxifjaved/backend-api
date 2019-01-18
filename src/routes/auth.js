@@ -5,7 +5,7 @@ import authenticate from '../middlewares/authenticate'
 import { signup, login, resetPassword } from '../validations/auth'
 
 import { createNewUser, updateUserById, getUserById, getUserByIdentifier } from '../db/controllers/user'
-import { decodToken } from '../helper'
+import { decodToken, uploader } from '../helper'
 import { sendResetPasswordEmail } from '../mailer'
 // import { findUser, userValidator } from '../validators/userValidator';
 
@@ -110,6 +110,19 @@ router.get('/currentUser', authenticate, async (req, res) => {
     } catch (error) {
         return res.status(500).json({ errors: error.toString(), message: 'Oops, something happen bad while proccessing your requset.' })
     }
+});
+
+router.patch('/profile-photo', authenticate, uploader, async (req, res) => {
+    const { id } = req.currentUser
+
+    // try {
+    //     let user = await getUserById(id)
+    //     if (!user) { return res.status(500).json({ errors: { message: 'Invalid User Token.' } }) };
+
+    //     return res.status(200).json({ user: user.toJSON() })
+    // } catch (error) {
+    //     return res.status(500).json({ errors: error.toString(), message: 'Oops, something happen bad while proccessing your requset.' })
+    // }
 });
 
 export default router;
