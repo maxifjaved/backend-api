@@ -5,7 +5,7 @@ import jwt from 'jsonwebtoken'
 let UserSchema = new mongoose.Schema({
     username: { type: String, lowercase: true, unique: true, required: true, index: true },
     email: { type: String, lowercase: true, unique: true, required: true, index: true },
-    isUsed: { type: Boolean, default: false },
+    isVerified: { type: Boolean, default: false },
     role: { type: String, enum: ['user', 'admin'], default: 'user', lowercase: true, required: true },
     firstname: String,
     lastname: String,
@@ -26,7 +26,7 @@ UserSchema.methods.setPassword = function (password) {
 
 UserSchema.methods.generateConfirmationUrl = function () {
     let confirmationToken = jwt.sign({ id: this._id }, process.env.CONFIRMATION_EMAIL_SECRET, { expiresIn: '1h' });
-    return `${process.env.FRONTEND_URL}/auth/confirmation/${confirmationToken}`;
+    return `${process.env.FRONTEND_URL}/auth/confirm-email/${confirmationToken}`;
 };
 
 
@@ -51,6 +51,7 @@ UserSchema.methods.toAuthJSON = function () {
     return {
         username: this.username,
         email: this.email,
+        isVerified: this.isVerified,
         fullname: this.fullname(),
         token: this.generateJWT(),
         image: this.image || 'https://upload.wikimedia.org/wikipedia/commons/c/cd/Portrait_Placeholder_Square.png'
@@ -59,8 +60,10 @@ UserSchema.methods.toAuthJSON = function () {
 
 UserSchema.methods.toJSON = function (user) {
     return {
+        id: this._id,
         username: this.username,
         email: this.email,
+        isVerified: this.isVerified,
         firstname: this.firstname,
         lastname: this.lastname,
         image: this.image || 'https://static.productionready.io/images/smiley-cyrus.jpg',

@@ -34,7 +34,7 @@ export async function signup(data) {
     if (!errors.password && !Validator.isLength(data.password, { min: 5 })) {
         errors.password = 'Password must be of minimum 5 characters.';
     }
-    
+
     if (!data.confirmationPassword || Validator.isEmpty(data.confirmationPassword)) {
         errors.confirmationPassword = 'This field is required';
     }
@@ -88,4 +88,22 @@ export async function signupDB(data, errors = {}) {
         error = { ...errors, ...error };
         return error;
     }
+}
+
+export function login(data) {
+    const errors = {};
+
+    if (!data.identifier || Validator.isEmpty(data.identifier)) {
+        errors.identifier = 'Identifier is required';
+    }
+
+    if (!data.password || Validator.isEmpty(data.password)) {
+        errors.password = 'Password is required';
+    }
+
+    return {
+        errors,
+        isValid: isEmpty(errors),
+    };
+
 }

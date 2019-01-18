@@ -25,6 +25,7 @@
     "morgan": "^1.9.1",
     "nodemailer": "^5.1.1",
     "passport": "^0.4.0",
+    "passport-local": "^1.0.0",
     "serve-favicon": "^2.5.0",
     "swagger-jsdoc": "^3.2.6",
     "swagger-ui-dist": "^3.20.2",

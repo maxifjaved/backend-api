@@ -25,6 +25,31 @@ export async function createNewUser(data) {
 
 }
 
+export async function updateUserById(id, data) {
+    try {
+        let user = await User.findById(id);
+        let { firstname, lastname, image, password, isVerified } = data
+
+        user.firstname = firstname || user.firstname;
+        user.lastname = lastname || user.lastname;
+        user.image = image || user.image;
+
+        password ? user.setPassword(password) : null
+
+        if (typeof isVerified !== 'undefined') {
+            user.isVerified = isVerified;
+        }
+
+        await user.save()
+        return user;
+
+    } catch (error) {
+        throw new Error(error)
+    }
+}
+
+
 export function getUserById(id) {
     return User.findById(id)
+
 }
