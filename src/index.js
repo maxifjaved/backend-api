@@ -12,7 +12,7 @@ import compression from 'compression';
 import * as Sentry from '@sentry/node';
 
 import './db';
-import './passport'
+import './services/passport'
 
 import routes from './routes';
 import json from './middlewares/json';
