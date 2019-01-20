@@ -2,10 +2,10 @@ import { Router } from 'express'
 import passport from "passport"
 
 import authenticate from '../middlewares/authenticate'
-import { signup, phoneVerification, phoneVerificationDB, login, resetPassword } from '../validations/auth'
+import { signup, phoneVerification, phoneVerificationDB, phoneVerificationCode, login, resetPassword } from '../validations/auth'
 
 import { createNewUser, updateUserById, getUserById, getUserByIdentifier } from '../db/controllers/user'
-import { createUserToken } from '../db/controllers/userToken'
+import { createUserToken, updateUserToken } from '../db/controllers/userToken'
 import { decodToken, uploader } from '../helper'
 import { sendResetPasswordEmail } from '../mailer'
 // import { findUser, userValidator } from '../validators/userValidator';
@@ -22,7 +22,7 @@ router.post('/signup', async (req, res, next) => {
         let user = await createNewUser(req.body)
         return res.status(200).json({ user: user.toAuthJSON() })
     } catch (error) {
-        return res.status(500).json({ errors: error.toString(), message: 'Oops, something happen bad while proccessing your requset.' })
+        return res.status(500).json({ errors: { error: error.toString() }, message: 'Oops, something happen bad while proccessing your requset.' })
     }
 })
 
@@ -42,7 +42,7 @@ router.post('/send-phone-verification-code', authenticate, async (req, res, next
 
         return res.status(200).json({ message: `Verification code is send to your number successfully. ` })
     } catch (error) {
-        return res.status(500).json({ errors: error.toString(), message: 'Oops, something happen bad while proccessing your requset.' })
+        return res.status(500).json({ errors: { error: error.toString() }, message: 'Oops, something happen bad while proccessing your requset.' })
     }
 })
 
@@ -51,9 +51,23 @@ router.get('/resend-phone-verification-code', authenticate, async (req, res, nex
         const { id } = req.currentUser
         await createUserToken(id, 'phone-confirmation');
 
-        return res.status(200).json({ message: `Verification code is send to your number successfully. ` })
+        return res.status(200).json({ message: `Verification code is send to your number successfully.` })
     } catch (error) {
-        return res.status(500).json({ errors: error.toString(), message: 'Oops, something happen bad while proccessing your requset.' })
+        return res.status(500).json({ errors: { error: error.toString() }, message: 'Oops, something happen bad while proccessing your requset.' })
+    }
+})
+
+router.post('/confirm-phone-verification-code', authenticate, async (req, res, next) => {
+    let { errors, isValid } = phoneVerificationCode(req.body)
+    if (!isValid) { return res.status(500).json({ errors }) }
+
+    try {
+        const { id } = req.currentUser
+        await updateUserToken(req.body);
+        await updateUserById(id, { isPhoneVerified: true })
+        return res.status(200).json({ message: `Your phone number verified successfully.` })
+    } catch (error) {
+        return res.status(500).json({ errors: { error: error.toString() }, message: 'Oops, something happen bad while proccessing your requset.' })
     }
 })
 
@@ -64,12 +78,12 @@ router.post('/login-via-local', (req, res, next) => {
         if (!isValid) { return res.status(500).json({ errors }) }
 
         passport.authenticate('local', (err, user, info) => {
-            if (err) { return res.status(500).json({ errors: error.toString(), message: 'Oops, something happen bad while proccessing your requset.' }) };
+            if (err) { return res.status(500).json({ errors: { error: error.toString() }, message: 'Oops, something happen bad while proccessing your requset.' }) };
             if (info) { return res.status(500).json({ errors: info }) };
             return res.status(200).json({ user });
         })(req, res, next)
     } catch (error) {
-        return res.status(500).json({ errors: error.toString(), message: 'Oops, something happen bad while proccessing your requset.' })
+        return res.status(500).json({ errors: { error: error.toString() }, message: 'Oops, something happen bad while proccessing your requset.' })
     }
 })
 
@@ -82,7 +96,7 @@ router.get('/refresh-token', authenticate, async (req, res, next) => {
 
         return res.status(200).json({ user: user.toAuthJSON() })
     } catch (error) {
-        return res.status(500).json({ errors: error.toString(), message: 'Oops, something happen bad while proccessing your requset.' })
+        return res.status(500).json({ errors: { error: error.toString() }, message: 'Oops, something happen bad while proccessing your requset.' })
     }
 });
 
@@ -96,7 +110,7 @@ router.get('/confirm-email/:token', async (req, res) => {
         return res.status(200).json({ message: 'Your email verifed successfully.' })
 
     } catch (error) {
-        return res.status(500).json({ errors: error.toString(), message: 'Oops, something happen bad while proccessing your requset.' })
+        return res.status(500).json({ errors: { error: error.toString() }, message: 'Oops, something happen bad while proccessing your requset.' })
     }
 });
 
@@ -109,7 +123,7 @@ router.get('/reset-password/:identifier', async (req, res) => {
         await sendResetPasswordEmail(user)
         return res.status(200).json({ message: 'Password reset request proccessed successfully. Check your email.' })
     } catch (error) {
-        return res.status(500).json({ errors: error.toString(), message: 'Oops, something happen bad while proccessing your requset.' })
+        return res.status(500).json({ errors: { error: error.toString() }, message: 'Oops, something happen bad while proccessing your requset.' })
     }
 });
 
@@ -126,7 +140,7 @@ router.post('/new-password/:token', async (req, res) => {
         await updateUserById(id, { password })
         return res.status(200).json({ message: 'Password reset successfully. Login with new password.' })
     } catch (error) {
-        return res.status(500).json({ errors: error.toString(), message: 'Oops, something happen bad while proccessing your requset.' })
+        return res.status(500).json({ errors: { error: error.toString() }, message: 'Oops, something happen bad while proccessing your requset.' })
     }
 });
 
@@ -139,7 +153,7 @@ router.get('/currentUser', authenticate, async (req, res) => {
 
         return res.status(200).json({ user: user.toJSON() })
     } catch (error) {
-        return res.status(500).json({ errors: error.toString(), message: 'Oops, something happen bad while proccessing your requset.' })
+        return res.status(500).json({ errors: { error: error.toString() }, message: 'Oops, something happen bad while proccessing your requset.' })
     }
 });
 
@@ -152,7 +166,7 @@ router.patch('/profile-photo', authenticate, uploader, async (req, res) => {
 
     //     return res.status(200).json({ user: user.toJSON() })
     // } catch (error) {
-    //     return res.status(500).json({ errors: error.toString(), message: 'Oops, something happen bad while proccessing your requset.' })
+    //     return res.status(500).json({ errors: {error: error.toString()}, message: 'Oops, something happen bad while proccessing your requset.' })
     // }
 });
 

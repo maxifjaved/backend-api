@@ -133,6 +133,25 @@ export async function phoneVerificationDB(data) {
     }
 }
 
+export function phoneVerificationCode(data) {
+    const errors = {};
+
+    if (!data.code || Validator.isEmpty(data.code)) {
+        errors.code = 'This field is required';
+    }
+
+    if (!errors.code && !Validator.isLength(data.code, { min: 4, max: 4 })) {
+        errors.code = 'Code must be of 4 characters.';
+    }
+
+    return {
+        errors,
+        isValid: isEmpty(errors),
+    };
+
+
+}
+
 
 
 
