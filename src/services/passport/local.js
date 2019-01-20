@@ -1,7 +1,7 @@
 import passport from 'passport'
 import { Strategy as LocalStrategy } from 'passport-local'
 
-import { getUserByIdentifier } from '../db/controllers/user';
+import { getUserByIdentifier } from '../../db/controllers/user';
 
 export default passport.use(new LocalStrategy({
     usernameField: 'identifier',

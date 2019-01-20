@@ -5,13 +5,17 @@ import jwt from 'jsonwebtoken'
 let UserSchema = new mongoose.Schema({
     username: { type: String, lowercase: true, unique: true, required: true, index: true },
     email: { type: String, lowercase: true, unique: true, required: true, index: true },
-    isVerified: { type: Boolean, default: false },
+    phonenumber: { type: String, unique: true, index: true },
+    isEmailVerified: { type: Boolean, default: false },
+    isPhoneVerified: { type: Boolean, default: false },
     role: { type: String, enum: ['user', 'admin'], default: 'user', lowercase: true, required: true },
     firstname: String,
     lastname: String,
-    image: String,
+    image: { type: String, default: 'https://upload.wikimedia.org/wikipedia/commons/c/cd/Portrait_Placeholder_Square.png' },
     hash: String,
-    salt: String
+    salt: String,
+
+    token: [{ type: mongoose.Schema.Types.ObjectId, ref: 'UserToken' }],
 }, { timestamps: true });
 
 UserSchema.methods.validPassword = function (password) {
@@ -50,22 +54,24 @@ UserSchema.methods.toAuthJSON = function () {
     return {
         username: this.username,
         email: this.email,
-        isVerified: this.isVerified,
+        isEmailVerified: this.isEmailVerified,
+        isPhoneVerified: this.isPhoneVerified,
         fullname: this.fullname(),
         token: this.generateJWT(),
-        image: this.image || 'https://upload.wikimedia.org/wikipedia/commons/c/cd/Portrait_Placeholder_Square.png'
+        image: this.image
     };
 };
 
-UserSchema.methods.toJSON = function (user) {
+UserSchema.methods.toJSON = function () {
     return {
         id: this._id,
         username: this.username,
         email: this.email,
-        isVerified: this.isVerified,
+        isEmailVerified: this.isEmailVerified,
+        isPhoneVerified: this.isPhoneVerified,
         firstname: this.firstname,
         lastname: this.lastname,
-        image: this.image || 'https://static.productionready.io/images/smiley-cyrus.jpg',
+        image: this.image
     };
 };
 

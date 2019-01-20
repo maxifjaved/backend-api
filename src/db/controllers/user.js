@@ -4,7 +4,7 @@ const User = mongoose.model('User');
 import { sendConfirmationEmail } from '../../mailer'
 
 export function getUserByIdentifier(identifier) {
-    return User.findOne({ $or: [{ email: identifier.toLowerCase() }, { username: identifier.toLowerCase() }] })
+    return User.findOne({ $or: [{ email: identifier.toLowerCase() }, { username: identifier.toLowerCase() }, { phonenumber: identifier }] })
 }
 
 export async function createNewUser(data) {
@@ -28,16 +28,22 @@ export async function createNewUser(data) {
 export async function updateUserById(id, data) {
     try {
         let user = await User.findById(id);
-        let { firstname, lastname, image, password, isVerified } = data
+        let { firstname, lastname, image, password, phonenumber, isEmailVerified, isPhoneVerified } = data
 
         user.firstname = firstname || user.firstname;
         user.lastname = lastname || user.lastname;
         user.image = image || user.image;
 
+        user.phonenumber = phonenumber || user.phonenumber;
+
         password ? user.setPassword(password) : null
 
-        if (typeof isVerified !== 'undefined') {
-            user.isVerified = isVerified;
+        if (typeof isEmailVerified !== 'undefined') {
+            user.isEmailVerified = isEmailVerified;
+        }
+
+        if (typeof isPhoneVerified !== 'undefined') {
+            user.isPhoneVerified = isPhoneVerified;
         }
 
         await user.save()

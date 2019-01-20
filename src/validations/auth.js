@@ -45,13 +45,17 @@ export async function signup(data) {
 
 
 
+    try {
+        let signupErrors = await signupDB(data, errors)
 
-    let signupErrors = await signupDB(data, errors)
+        return {
+            errors: signupErrors,
+            isValid: isEmpty(signupErrors),
+        };
+    } catch (error) {
+        throw new Error(error)
+    }
 
-    return {
-        errors: signupErrors,
-        isValid: isEmpty(signupErrors),
-    };
 
 }
 
@@ -85,10 +89,52 @@ export async function signupDB(data, errors = {}) {
         }
         return errors
     } catch (error) {
-        error = { ...errors, ...error };
-        return error;
+        throw new Error(error)
     }
 }
+
+export function phoneVerification(data) {
+    const errors = {};
+
+    if (!data.phonenumber || Validator.isEmpty(data.phonenumber)) {
+        errors.phonenumber = 'This field is required';
+    }
+
+    if (!errors.phonenumber && !Validator.isMobilePhone(data.phonenumber, 'any', { strictMode: true })) {
+        errors.phonenumber = 'Invalid Phone Number';
+    }
+
+    return {
+        errors,
+        isValid: isEmpty(errors)
+    };
+
+}
+
+export async function phoneVerificationDB(data) {
+    const errors = {};
+
+    try {
+        let user = await userController.getUserByIdentifier(data.phonenumber)
+
+        if (user) {
+            if (user.phonenumber === data.phonenumber) {
+                errors.phonenumber = 'There is user with such phonenumber';
+            }
+        }
+
+        return {
+            errors,
+            isValid: isEmpty(errors),
+        };
+
+    } catch (error) {
+        throw new Error(error)
+    }
+}
+
+
+
 
 export function login(data) {
     const errors = {};

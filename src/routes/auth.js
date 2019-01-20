@@ -2,9 +2,10 @@ import { Router } from 'express'
 import passport from "passport"
 
 import authenticate from '../middlewares/authenticate'
-import { signup, login, resetPassword } from '../validations/auth'
+import { signup, phoneVerification, phoneVerificationDB, login, resetPassword } from '../validations/auth'
 
 import { createNewUser, updateUserById, getUserById, getUserByIdentifier } from '../db/controllers/user'
+import { createUserToken } from '../db/controllers/userToken'
 import { decodToken, uploader } from '../helper'
 import { sendResetPasswordEmail } from '../mailer'
 // import { findUser, userValidator } from '../validators/userValidator';
@@ -25,6 +26,37 @@ router.post('/signup', async (req, res, next) => {
     }
 })
 
+router.post('/send-phone-verification-code', authenticate, async (req, res, next) => {
+    try {
+        let phoneValidationError = phoneVerification(req.body)
+        if (!phoneValidationError.isValid) { return res.status(500).json({ errors: phoneValidationError.errors }) }
+
+        let { errors, isValid } = await phoneVerificationDB(req.body)
+        if (!isValid) { return res.status(500).json({ errors }) }
+
+
+        const { id } = req.currentUser
+        const { phonenumber } = req.body
+        await updateUserById(id, { phonenumber })
+        await createUserToken(id, 'phone-confirmation');
+
+        return res.status(200).json({ message: `Verification code is send to your number successfully. ` })
+    } catch (error) {
+        return res.status(500).json({ errors: error.toString(), message: 'Oops, something happen bad while proccessing your requset.' })
+    }
+})
+
+router.get('/resend-phone-verification-code', authenticate, async (req, res, next) => {
+    try {
+        const { id } = req.currentUser
+        await createUserToken(id, 'phone-confirmation');
+
+        return res.status(200).json({ message: `Verification code is send to your number successfully. ` })
+    } catch (error) {
+        return res.status(500).json({ errors: error.toString(), message: 'Oops, something happen bad while proccessing your requset.' })
+    }
+})
+
 
 router.post('/login-via-local', (req, res, next) => {
     try {
@@ -39,7 +71,6 @@ router.post('/login-via-local', (req, res, next) => {
     } catch (error) {
         return res.status(500).json({ errors: error.toString(), message: 'Oops, something happen bad while proccessing your requset.' })
     }
-
 })
 
 router.get('/refresh-token', authenticate, async (req, res, next) => {
@@ -61,7 +92,7 @@ router.get('/confirm-email/:token', async (req, res) => {
     try {
         let decodedToken = await decodToken(token, process.env.CONFIRMATION_EMAIL_SECRET)
         let { id } = decodedToken;
-        await updateUserById(id, { isVerified: true })
+        await updateUserById(id, { isEmailVerified: true })
         return res.status(200).json({ message: 'Your email verifed successfully.' })
 
     } catch (error) {
