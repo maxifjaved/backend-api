@@ -3,6 +3,7 @@ import passport from "passport"
 
 import authenticate from '../middlewares/authenticate'
 import { signup, phoneVerification, phoneVerificationDB, phoneVerificationCode, login, resetPassword } from '../validations/auth'
+import { checkFileType } from '../validations/uploads'
 
 import { createNewUser, updateUserById, getUserById, getUserByIdentifier } from '../db/controllers/user'
 import { createUserToken, updateUserToken } from '../db/controllers/userToken'
@@ -33,7 +34,6 @@ router.post('/send-phone-verification-code', authenticate, async (req, res, next
 
         let { errors, isValid } = await phoneVerificationDB(req.body)
         if (!isValid) { return res.status(500).json({ errors }) }
-
 
         const { id } = req.currentUser
         const { phonenumber } = req.body
@@ -159,6 +159,20 @@ router.get('/currentUser', authenticate, async (req, res) => {
 
 router.patch('/profile-photo', authenticate, uploader, async (req, res) => {
     const { id } = req.currentUser
+
+    let files = req.files
+    try {
+        let { errors, isValid } = checkFileType(req.files, 1, 'image')
+
+        // await updateUserById(id, { image: true })
+        return res.status(200).json({ files: req.files })
+
+    } catch (error) {
+        return res.status(500).json({ errors: { error: error.toString() }, message: 'Oops, something happen bad while proccessing your requset.' })
+    }
+
+
+    // console.log(req)
 
     // try {
     //     let user = await getUserById(id)

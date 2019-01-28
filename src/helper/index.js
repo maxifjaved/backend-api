@@ -3,7 +3,7 @@ import crypto from 'crypto'
 import path from 'path'
 import multer from 'multer'
 
-const DEFAULT_UPLOAD_PATH = path.join(__dirname, '/../../public')
+const DEFAULT_UPLOAD_PATH = path.join(__dirname, '/../../public/uploads')
 
 
 export function usernameIsValid(username = '') {
