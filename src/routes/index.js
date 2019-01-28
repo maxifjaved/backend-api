@@ -1,8 +1,11 @@
 import { Router } from 'express';
 
 import swaggerSpec from '../utils/swagger';
-import users from './users';
+
 import auth from './auth';
+import users from './users';
+import tags from './tags';
+import posts from './posts';
 
 /**
  * Contains all API routes for the application.
@@ -28,5 +31,7 @@ router.get('/', (req, res) => {
 
 router.use('/auth', auth);
 router.use('/users', users);
+router.use('/tags', tags);
+router.use('/posts', posts);
 
 export default router;
