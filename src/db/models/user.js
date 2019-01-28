@@ -76,6 +76,15 @@ UserSchema.methods.toAuthJSON = function () {
         image: this.image
     };
 };
+UserSchema.methods.toProfileJSONFor = function (user) {
+    return {
+        username: this.username,
+        email: this.email,
+        image: this.image,
+        friends: user ? user.isFriend(this._id) : false,
+        friendRequests: user ? user.isFriendshipRequested(this._id) : false
+    };
+};
 
 UserSchema.methods.toJSON = function () {
     return {
