@@ -1,6 +1,6 @@
 import nodemailer from "nodemailer";
 
-const from = '"Backend Api" <axif.javed@gmail.com>';
+const from = '"Api" <axif.javed@gmail.com>';
 
 function setup() {
     return nodemailer.createTransport({
@@ -20,7 +20,7 @@ export async function sendConfirmationEmail(user) {
     const email = {
         from,
         to: user.email,
-        subject: "Welcome to Backend Api - Verify Email",
+        subject: "Welcome - Verify Email",
         text: `
     Welcome. Please, confirm your email.
     ${user.generateConfirmationUrl()}

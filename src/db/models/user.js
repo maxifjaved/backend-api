@@ -1,19 +1,30 @@
 import mongoose from 'mongoose'
 import crypto from 'crypto'
 import jwt from 'jsonwebtoken'
+import moment from "moment";
 
 let UserSchema = new mongoose.Schema({
     username: { type: String, lowercase: true, unique: true, required: true, index: true },
     email: { type: String, lowercase: true, unique: true, required: true, index: true },
     phonenumber: { type: String, unique: true, index: true },
-    isEmailVerified: { type: Boolean, default: false },
-    isPhoneVerified: { type: Boolean, default: false },
+
     role: { type: String, enum: ['user', 'admin'], default: 'user', lowercase: true, required: true },
+    gender: { type: String, enum: ['male', 'female', 'other'], default: 'male', lowercase: true, required: true },
+    dob: { type: Date, default: moment.utc().format("YYYY-MM-DD") },
+
     firstname: String,
     lastname: String,
-    image: { type: String, default: 'https://upload.wikimedia.org/wikipedia/commons/c/cd/Portrait_Placeholder_Square.png' },
+    image: { type: String, default: '/uploads/avatarHolder.png' },
+
     hash: String,
     salt: String,
+
+    emailVerified: { type: Boolean, default: false },
+    phoneVerified: { type: Boolean, default: false },
+
+    postNotification: { type: Boolean, default: false },
+    peerNotification: { type: Boolean, default: false },
+    privateMsgNotification: { type: Boolean, default: false },
 
     token: [{ type: mongoose.Schema.Types.ObjectId, ref: 'UserToken' }],
 }, { timestamps: true });
@@ -43,7 +54,7 @@ UserSchema.methods.generateJWT = function () {
     return jwt.sign({
         id: this._id,
         username: this.username
-    }, process.env.JWT_SECRET, { expiresIn: '24h' });
+    }, process.env.JWT_SECRET, { expiresIn: '1y' });
 };
 
 UserSchema.methods.fullname = function () {
@@ -54,8 +65,8 @@ UserSchema.methods.toAuthJSON = function () {
     return {
         username: this.username,
         email: this.email,
-        isEmailVerified: this.isEmailVerified,
-        isPhoneVerified: this.isPhoneVerified,
+        emailVerified: this.emailVerified,
+        phoneVerified: this.phoneVerified,
         fullname: this.fullname(),
         token: this.generateJWT(),
         image: this.image
@@ -67,8 +78,8 @@ UserSchema.methods.toJSON = function () {
         id: this._id,
         username: this.username,
         email: this.email,
-        isEmailVerified: this.isEmailVerified,
-        isPhoneVerified: this.isPhoneVerified,
+        emailVerified: this.emailVerified,
+        phoneVerified: this.phoneVerified,
         firstname: this.firstname,
         lastname: this.lastname,
         image: this.image

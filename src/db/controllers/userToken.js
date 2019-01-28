@@ -1,4 +1,5 @@
 import mongoose from 'mongoose'
+import isEmpty from 'lodash/isEmpty';
 const UserToken = mongoose.model('UserToken');
 
 import { getUserById } from './user'
@@ -28,18 +29,27 @@ export async function createUserToken(userId, type) {
 }
 
 export async function updateUserToken(data) {
-
+    const errors = {};
     const { code } = data;
+
     try {
         let userToken = await UserToken.findOne({ token: code });
 
-        if (!userToken) { throw new Error('Invalid user token') }
-        if (userToken.isUsed) { throw new Error('User token already used.') }
+        if (!userToken) {
+            errors.form = 'Invalid user verification code.'; //throw new Error('Invalid user token')
+        }
+
+        if (!errors.code && userToken.isUsed) {
+            errors.form = 'User token already used.';
+        }
+
+        let isValid = isEmpty(errors)
+
+        if (!isValid) { return { errors, isValid }; }
 
         userToken.isUsed = true
         await userToken.save();
-        return userToken;
-
+        return { userToken, isValid };
     } catch (error) {
         throw new Error(error)
     }

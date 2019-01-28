@@ -1,5 +1,6 @@
 import Validator from 'validator';
 import isEmpty from 'lodash/isEmpty';
+import moment from 'moment';
 
 import { usernameIsValid } from '../helper'
 
@@ -23,8 +24,25 @@ export async function signup(data) {
     if (!errors.username && !usernameIsValid(data.username)) {
         errors.username = 'Only number, letter and _, ., - characters are allowed';
     }
+
     if (!errors.username && !Validator.isLength(data.username, { min: 5 })) {
         errors.username = 'Username must be of minimum 5 characters.';
+    }
+
+    if (!data.gender || Validator.isEmpty(data.gender)) {
+        errors.gender = 'This field is required';
+    }
+
+    if (!errors.gender && ['male', 'female', 'other'].indexOf(data.gender) == -1) {
+        errors.gender = 'Gender value must be: male, female or other';
+    }
+
+    if (!data.dob || Validator.isEmpty(data.dob)) {
+        errors.dob = 'This field is required';
+    }
+
+    if (!errors.dob && !moment(data.dob, 'YYYY-MM-DD').isValid()) {
+        errors.dob = 'Must be a valid date as YYYY-MM-DD';
     }
 
     if (!data.password || Validator.isEmpty(data.password)) {
@@ -100,9 +118,9 @@ export function phoneVerification(data) {
         errors.phonenumber = 'This field is required';
     }
 
-    if (!errors.phonenumber && !Validator.isMobilePhone(data.phonenumber, 'any', { strictMode: true })) {
-        errors.phonenumber = 'Invalid Phone Number';
-    }
+    // if (!errors.phonenumber && !Validator.isMobilePhone(data.phonenumber, 'any', { strictMode: true })) {
+    //     errors.phonenumber = 'Invalid Phone Number';
+    // }
 
     return {
         errors,

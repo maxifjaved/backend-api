@@ -63,8 +63,10 @@ router.post('/confirm-phone-verification-code', authenticate, async (req, res, n
 
     try {
         const { id } = req.currentUser
-        await updateUserToken(req.body);
-        await updateUserById(id, { isPhoneVerified: true })
+        const { isValid, errors } = await updateUserToken(req.body);
+        if (!isValid) { return res.status(500).json({ errors }) }
+
+        await updateUserById(id, { phoneVerified: true })
         return res.status(200).json({ message: `Your phone number verified successfully.` })
     } catch (error) {
         return res.status(500).json({ errors: { error: error.toString() }, message: 'Oops, something happen bad while proccessing your requset.' })
@@ -106,7 +108,7 @@ router.get('/confirm-email/:token', async (req, res) => {
     try {
         let decodedToken = await decodToken(token, process.env.CONFIRMATION_EMAIL_SECRET)
         let { id } = decodedToken;
-        await updateUserById(id, { isEmailVerified: true })
+        await updateUserById(id, { emailVerified: true })
         return res.status(200).json({ message: 'Your email verifed successfully.' })
 
     } catch (error) {
@@ -157,31 +159,26 @@ router.get('/currentUser', authenticate, async (req, res) => {
     }
 });
 
-router.patch('/profile-photo', authenticate, uploader, async (req, res) => {
+router.patch('/update-user-profile', authenticate, uploader, async (req, res) => {
     const { id } = req.currentUser
 
-    let files = req.files
     try {
-        let { errors, isValid } = checkFileType(req.files, 1, 'image')
+        let files = req.files
+        if (files.length) {
+            let photo = files[0];
+            let { errors, isValid } = checkFileType(photo, 'image')
+            if (!isValid) { return res.status(500).json({ errors }) }
 
-        // await updateUserById(id, { image: true })
-        return res.status(200).json({ files: req.files })
+            req.body.image = `/uploads/${photo.filename}`
+        }
+
+        await updateUserById(id, req.body)
+        let updatedUser = await getUserById(id)
+        return res.status(200).json({ user: updatedUser.toJSON() })
 
     } catch (error) {
         return res.status(500).json({ errors: { error: error.toString() }, message: 'Oops, something happen bad while proccessing your requset.' })
     }
-
-
-    // console.log(req)
-
-    // try {
-    //     let user = await getUserById(id)
-    //     if (!user) { return res.status(500).json({ errors: { message: 'Invalid User Token.' } }) };
-
-    //     return res.status(200).json({ user: user.toJSON() })
-    // } catch (error) {
-    //     return res.status(500).json({ errors: {error: error.toString()}, message: 'Oops, something happen bad while proccessing your requset.' })
-    // }
 });
 
 export default router;

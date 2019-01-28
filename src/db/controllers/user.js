@@ -1,4 +1,5 @@
 import mongoose from 'mongoose'
+import moment from 'moment'
 const User = mongoose.model('User');
 
 import { sendConfirmationEmail } from '../../mailer'
@@ -8,10 +9,12 @@ export function getUserByIdentifier(identifier) {
 }
 
 export async function createNewUser(data) {
-    const { username, email, password } = data;
+    const { username, email, password, gender, dob } = data;
     let user = new User();
     user.username = username;
     user.email = email;
+    user.gender = gender;
+    user.dob = moment.utc(dob).format("YYYY-MM-DD")
     user.setPassword(password);
 
     try {
@@ -28,22 +31,25 @@ export async function createNewUser(data) {
 export async function updateUserById(id, data) {
     try {
         let user = await User.findById(id);
-        let { firstname, lastname, image, password, phonenumber, isEmailVerified, isPhoneVerified } = data
+        let { firstname, lastname, image, password, phonenumber, emailVerified, phoneVerified, gender, dob } = data
 
         user.firstname = firstname || user.firstname;
         user.lastname = lastname || user.lastname;
         user.image = image || user.image;
 
+        user.gender = gender || user.gender;
+        user.dob = moment.utc(dob).format("YYYY-MM-DD") || user.dob;
+
         user.phonenumber = phonenumber || user.phonenumber;
 
         password ? user.setPassword(password) : null
 
-        if (typeof isEmailVerified !== 'undefined') {
-            user.isEmailVerified = isEmailVerified;
+        if (typeof emailVerified !== 'undefined') {
+            user.emailVerified = emailVerified;
         }
 
-        if (typeof isPhoneVerified !== 'undefined') {
-            user.isPhoneVerified = isPhoneVerified;
+        if (typeof phoneVerified !== 'undefined') {
+            user.phoneVerified = phoneVerified;
         }
 
         await user.save()
@@ -58,4 +64,8 @@ export async function updateUserById(id, data) {
 export function getUserById(id) {
     return User.findById(id)
 
+}
+
+export function getAllUsers(data) {
+    return User.find({})
 }
