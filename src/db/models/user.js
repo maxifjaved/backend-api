@@ -27,6 +27,10 @@ let UserSchema = new mongoose.Schema({
     privateMsgNotification: { type: Boolean, default: false },
 
     token: [{ type: mongoose.Schema.Types.ObjectId, ref: 'UserToken' }],
+    favorites: [{ type: mongoose.Schema.Types.ObjectId, ref: 'UserPost' }],
+    friends: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
+    friendRequests: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }]
+
 }, { timestamps: true });
 
 UserSchema.methods.validPassword = function (password) {
@@ -84,6 +88,65 @@ UserSchema.methods.toJSON = function () {
         lastname: this.lastname,
         image: this.image
     };
+};
+
+
+UserSchema.methods.favorite = function (id) {
+    if (this.favorites.indexOf(id) === -1) {
+        this.favorites.push(id);
+    }
+
+    return this.save();
+};
+
+UserSchema.methods.unfavorite = function (id) {
+    this.favorites.remove(id);
+    return this.save();
+};
+
+UserSchema.methods.isFavorite = function (id) {
+    return this.favorites.some(function (favoriteId) {
+        return favoriteId.toString() === id.toString();
+    });
+};
+
+
+
+UserSchema.methods.addFriend = function (id) {
+    if (this.friends.indexOf(id) === -1) {
+        this.friends.push(id);
+    }
+    return this.save();
+};
+
+UserSchema.methods.unFriend = function (id) {
+    this.friends.remove(id);
+    return this.save();
+};
+
+UserSchema.methods.isFriend = function (id) {
+    return this.friends.some(function (friendId) {
+        return friendId.toString() === id.toString();
+    });
+};
+
+
+UserSchema.methods.friendshipRequest = function (id) {
+    if (this.friendRequests.indexOf(id) === -1) {
+        this.friendRequests.push(id);
+    }
+    return this.save();
+};
+
+UserSchema.methods.removeRequestFriendship = function (id) {
+    this.friendRequests.remove(id);
+    return this.save();
+};
+
+UserSchema.methods.isFriendshipRequested = function (id) {
+    return this.friendRequests.some(function (requestId) {
+        return requestId.toString() === id.toString();
+    });
 };
 
 
