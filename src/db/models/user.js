@@ -81,8 +81,6 @@ UserSchema.methods.toProfileJSONFor = function (user) {
         username: this.username,
         email: this.email,
         image: this.image,
-        friends: user ? user.isFriend(this._id) : false,
-        friendRequests: user ? user.isFriendshipRequested(this._id) : false
     };
 };
 
@@ -95,7 +93,9 @@ UserSchema.methods.toJSON = function () {
         phoneVerified: this.phoneVerified,
         firstname: this.firstname,
         lastname: this.lastname,
-        image: this.image
+        image: this.image,
+        gender: this.gender,
+        dob: this.dob
     };
 };
 

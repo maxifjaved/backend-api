@@ -32,7 +32,7 @@ UserPostSchema.methods.toJSONFor = function (user) {
         tagList: this.tagList,
         favorited: user ? user.isFavorite(this._id) : false,
         favoritesCount: this.favoritesCount,
-        user: this.user.toProfileJSONFor(user)
+        user: user ? this.user.toProfileJSONFor(user) : null
     };
 };
 
