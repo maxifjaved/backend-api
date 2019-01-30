@@ -6,7 +6,7 @@ import moment from "moment";
 let UserSchema = new mongoose.Schema({
     username: { type: String, lowercase: true, unique: true, required: true, index: true },
     email: { type: String, lowercase: true, unique: true, required: true, index: true },
-    phonenumber: { type: String, unique: true, index: true },
+    phonenumber: { type: String },
 
     role: { type: String, enum: ['user', 'admin'], default: 'user', lowercase: true, required: true },
     gender: { type: String, enum: ['male', 'female', 'other'], default: 'male', lowercase: true, required: true },
