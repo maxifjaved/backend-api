@@ -73,7 +73,9 @@ UserSchema.methods.toAuthJSON = function () {
         phoneVerified: this.phoneVerified,
         fullname: this.fullname(),
         token: this.generateJWT(),
-        image: this.image
+        image: this.image,
+        gender: this.gender,
+        dob: this.dob
     };
 };
 UserSchema.methods.toProfileJSONFor = function (user) {
@@ -81,6 +83,8 @@ UserSchema.methods.toProfileJSONFor = function (user) {
         username: this.username,
         email: this.email,
         image: this.image,
+        gender: this.gender,
+        dob: this.dob
     };
 };
 
