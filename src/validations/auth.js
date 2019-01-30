@@ -129,11 +129,11 @@ export function phoneVerification(data) {
 
 }
 
-export async function phoneVerificationDB(data) {
+export async function phoneVerificationDB(data, id) {
     const errors = {};
 
     try {
-        let user = await userController.getUserByIdentifier(data.phonenumber)
+        let user = await userController.isPhoneAssignedToOtherUser(data.phonenumber, id)
 
         if (user) {
             if (user.phonenumber === data.phonenumber) {

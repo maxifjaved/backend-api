@@ -8,6 +8,11 @@ export function getUserByIdentifier(identifier) {
     return User.findOne({ $or: [{ email: identifier.toLowerCase() }, { username: identifier.toLowerCase() }, { phonenumber: identifier }] })
 }
 
+export function isPhoneAssignedToOtherUser(phonenumber, id) {
+    return User.findOne({ phonenumber: phonenumber, _id: { $ne: id } })
+}
+
+
 export async function createNewUser(data) {
     const { username, email, password, gender, dob } = data;
     let user = new User();
@@ -68,4 +73,8 @@ export function getUserById(id) {
 
 export function getAllUsers(data) {
     return User.find({})
+}
+
+export function deleteUserById(id) {
+    return User.remove({ _id: id });
 }

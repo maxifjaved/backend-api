@@ -32,10 +32,11 @@ router.post('/send-phone-verification-code', authenticate, async (req, res, next
         let phoneValidationError = phoneVerification(req.body)
         if (!phoneValidationError.isValid) { return res.status(500).json({ errors: phoneValidationError.errors }) }
 
-        let { errors, isValid } = await phoneVerificationDB(req.body)
+        const { id } = req.currentUser
+
+        let { errors, isValid } = await phoneVerificationDB(req.body, id)
         if (!isValid) { return res.status(500).json({ errors }) }
 
-        const { id } = req.currentUser
         const { phonenumber } = req.body
         await updateUserById(id, { phonenumber })
         await createUserToken(id, 'phone-confirmation');

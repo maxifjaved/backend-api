@@ -3,7 +3,7 @@ import { Router } from 'express';
 // import * as userController from '../controllers/users';
 // import { findUser, userValidator } from '../validators/userValidator';
 import authenticate from '../middlewares/authenticate'
-import { getAllUsers, getUserById } from '../db/controllers/user'
+import { getAllUsers, getUserById, deleteUserById } from '../db/controllers/user'
 
 const router = Router();
 
@@ -23,6 +23,16 @@ router.get('/:id', authenticate, async (req, res, next) => {
     try {
         let user = await getUserById(id)
         return res.status(200).json({ user: user.toJSON() });
+    } catch (error) {
+        return res.status(500).json({ errors: { error: error.toString() }, message: 'Oops, something happen bad while proccessing your requset.' })
+    }
+});
+router.delete('/:id', async function (req, res, next) {
+    const { id } = req.params;
+
+    try {
+        await deleteUserById(id)
+        return res.status(200).json({ message: 'User deleted successfully.' });
     } catch (error) {
         return res.status(500).json({ errors: { error: error.toString() }, message: 'Oops, something happen bad while proccessing your requset.' })
     }
