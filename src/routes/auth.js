@@ -2,11 +2,11 @@ import { Router } from 'express'
 import passport from "passport"
 
 import authenticate from '../middlewares/authenticate'
-import { signup, phoneVerification, phoneVerificationDB, phoneVerificationCode, login, resetPassword } from '../validations/auth'
+import { signup, phoneVerification, phoneVerificationDB, phoneVerificationCode, login, resetPassword, resetPasswordPhone } from '../validations/auth'
 import { checkFileType } from '../validations/uploads'
 
 import { createNewUser, updateUserById, getUserById, getUserByIdentifier } from '../db/controllers/user'
-import { createUserToken, updateUserToken } from '../db/controllers/userToken'
+import { createUserToken, updateUserToken, deleteUserTokenById } from '../db/controllers/userToken'
 import { decodToken, uploader } from '../helper'
 import { sendResetPasswordEmail } from '../mailer'
 // import { findUser, userValidator } from '../validators/userValidator';
@@ -117,7 +117,7 @@ router.get('/confirm-email/:token', async (req, res) => {
     }
 });
 
-router.get('/reset-password/:identifier', async (req, res) => {
+router.get('/send-reset-password-email/:identifier', async (req, res) => {
     const { identifier } = req.params;
 
     try {
@@ -130,7 +130,27 @@ router.get('/reset-password/:identifier', async (req, res) => {
     }
 });
 
-router.post('/new-password/:token', async (req, res) => {
+router.get('/send-reset-password-token-to-phone/:identifier', async (req, res) => {
+    const { identifier } = req.params;
+
+    try {
+        let user = await getUserByIdentifier(identifier);
+        if (!user) { return res.status(404).json({ errors: { message: 'User with such email/username or phone doesn\'t exist in system.' } }); }
+
+        if (!user.phonenumber) { return res.status(404).json({ errors: { message: 'No phone number exists aginsts your account' } }); }
+
+        if (!user.phoneVerified) { return res.status(404).json({ errors: { message: 'Your phone is not verified. Please verify your phone first.' } }); }
+
+        await createUserToken(user.id, 'phone-reset-password');
+
+        return res.status(200).json({ message: `Reset password code is send to your number successfully. ` })
+    } catch (error) {
+        return res.status(500).json({ errors: { error: error.toString() }, message: 'Oops, something happen bad while proccessing your requset.' })
+    }
+});
+
+
+router.post('/new-password-email/:token', async (req, res) => {
     const { token } = req.params;
 
     try {
@@ -141,6 +161,26 @@ router.post('/new-password/:token', async (req, res) => {
         let { id } = decodedToken;
 
         await updateUserById(id, { password })
+        return res.status(200).json({ message: 'Password reset successfully. Login with new password.' })
+    } catch (error) {
+        return res.status(500).json({ errors: { error: error.toString() }, message: 'Oops, something happen bad while proccessing your requset.' })
+    }
+});
+
+router.post('/new-password-phone', async (req, res) => {
+
+    try {
+        const { errors, isValid } = resetPasswordPhone(req.body)
+        if (!isValid) { return res.status(500).json({ errors }) }
+        let { password } = req.body
+
+        const tokenDetail = await updateUserToken(req.body, 'phone-reset-password');
+        if (!tokenDetail.isValid) { return res.status(500).json({ errors: tokenDetail }) }
+
+        const { userToken } = tokenDetail
+        await updateUserById(userToken.user, { password })
+        await deleteUserTokenById(userToken.id);
+
         return res.status(200).json({ message: 'Password reset successfully. Login with new password.' })
     } catch (error) {
         return res.status(500).json({ errors: { error: error.toString() }, message: 'Oops, something happen bad while proccessing your requset.' })

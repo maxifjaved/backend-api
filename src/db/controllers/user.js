@@ -19,7 +19,7 @@ export async function createNewUser(data) {
     user.username = username;
     user.email = email;
     user.gender = gender;
-    user.dob = moment.utc(dob).format("YYYY-MM-DD")
+    user.dob = dob
     user.setPassword(password);
 
     try {
@@ -43,7 +43,7 @@ export async function updateUserById(id, data) {
         user.image = image || user.image;
 
         user.gender = gender || user.gender;
-        user.dob = moment.utc(dob).format("YYYY-MM-DD") || user.dob;
+        user.dob = dob || user.dob;
 
         user.phonenumber = phonenumber || user.phonenumber;
 

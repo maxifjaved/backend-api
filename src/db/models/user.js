@@ -10,7 +10,7 @@ let UserSchema = new mongoose.Schema({
 
     role: { type: String, enum: ['user', 'admin'], default: 'user', lowercase: true, required: true },
     gender: { type: String, enum: ['male', 'female', 'other'], default: 'male', lowercase: true, required: true },
-    dob: { type: Date, default: moment.utc().format("YYYY-MM-DD") },
+    dob: { type: String, default: "YYYY-DD-MM" },
 
     firstname: String,
     lastname: String,
@@ -51,7 +51,7 @@ UserSchema.methods.generateConfirmationUrl = function () {
 
 UserSchema.methods.generateResetPasswordUrl = function () {
     let token = jwt.sign({ id: this._id }, process.env.RESET_PASSWORD_SECRET, { expiresIn: '1h' });
-    return `${process.env.FRONTEND_URL}/auth/new-password/${token}`;
+    return `${process.env.FRONTEND_URL}/auth/new-password-email/${token}`;
 };
 
 UserSchema.methods.generateJWT = function () {

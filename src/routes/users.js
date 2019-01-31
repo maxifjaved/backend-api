@@ -38,7 +38,7 @@ router.delete('/:id', async function (req, res, next) {
     }
 });
 
-router.get('/:userId/friends', authenticate, async function (req, res, next) {
+router.get('/:userId/add-to-friendship-list', authenticate, async function (req, res, next) {
     const { userId } = req.params;
     const { id } = req.currentUser
 
@@ -57,7 +57,7 @@ router.get('/:userId/friends', authenticate, async function (req, res, next) {
     }
 });
 
-router.delete('/:userId/friends', authenticate, async function (req, res, next) {
+router.delete('/:userId/remove-from-friendship-list', authenticate, async function (req, res, next) {
     const { userId } = req.params;
     const { id } = req.currentUser
 
@@ -95,7 +95,7 @@ router.get('/:userId/requset-friendship', authenticate, async function (req, res
     }
 });
 
-router.delete('/:userId/requset-friendship', authenticate, async function (req, res, next) {
+router.delete('/:userId/delete-friendship-requset', authenticate, async function (req, res, next) {
     const { userId } = req.params;
     const { id } = req.currentUser
 

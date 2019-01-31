@@ -11,7 +11,8 @@ UserTokenSchema.methods.toJSON = function () {
     return {
         id: this._id,
         token: this.token,
-        type: this.type
+        type: this.type,
+        user: this.user.toJSON()
     };
 };
 

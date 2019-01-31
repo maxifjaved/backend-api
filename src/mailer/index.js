@@ -37,7 +37,7 @@ export async function sendResetPasswordEmail(user) {
         subject: "Reset Password",
         text: `
     To reset password follow this link
-    ${user.generateResetPasswordLink()}
+    ${user.generateResetPasswordUrl()}
     `
     };
 

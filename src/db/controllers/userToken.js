@@ -28,19 +28,19 @@ export async function createUserToken(userId, type) {
     }
 }
 
-export async function updateUserToken(data) {
+export async function updateUserToken(data, type) {
     const errors = {};
     const { code } = data;
 
     try {
-        let userToken = await UserToken.findOne({ token: code });
+        let userToken = await UserToken.findOne({ token: code, type: type });
 
         if (!userToken) {
-            errors.form = 'Invalid user verification code.'; //throw new Error('Invalid user token')
+            errors.code = 'Invalid user  code.'; //throw new Error('Invalid user token')
         }
 
         if (!errors.code && userToken.isUsed) {
-            errors.form = 'User token already used.';
+            errors.code = 'User token already used.';
         }
 
         let isValid = isEmpty(errors)
@@ -53,4 +53,8 @@ export async function updateUserToken(data) {
     } catch (error) {
         throw new Error(error)
     }
+}
+
+export function deleteUserTokenById(id) {
+    return UserToken.remove({ _id: id });
 }
