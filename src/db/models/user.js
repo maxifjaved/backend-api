@@ -14,7 +14,7 @@ let UserSchema = new mongoose.Schema({
 
     firstname: String,
     lastname: String,
-    image: { type: String, default: '/uploads/avatarHolder.png' },
+    image: { type: String, default: '/avatarHolder.png' },
 
     hash: String,
     salt: String,

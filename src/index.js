@@ -30,6 +30,18 @@ const APP_HOST = process.env.APP_HOST || '0.0.0.0';
 
 const pathToSwaggerUi = require('swagger-ui-dist').absolutePath();
 
+
+// Create audio/ and upload/ folders incase they don't already exist
+// This is for the heroku platform with its ephemeral filesystem
+try {
+    fs.existsSync(path.join(__dirname, '/../public')) || fs.mkdirSync(path.join(__dirname, '/../public'));
+    fs.existsSync(path.join(__dirname, '/../public/uploads')) || fs.mkdirSync(path.join(__dirname, '/../public/uploads'));
+} catch (err) {
+    console.log(err);
+}
+
+
+
 app.set('port', APP_PORT);
 app.set('host', APP_HOST);
 
