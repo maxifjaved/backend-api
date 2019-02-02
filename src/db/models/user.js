@@ -67,6 +67,7 @@ UserSchema.methods.fullname = function () {
 
 UserSchema.methods.toAuthJSON = function () {
     return {
+        id: this._id,
         username: this.username,
         email: this.email,
         emailVerified: this.emailVerified,
@@ -80,6 +81,7 @@ UserSchema.methods.toAuthJSON = function () {
 };
 UserSchema.methods.toProfileJSONFor = function (user) {
     return {
+        id: this._id,
         username: this.username,
         email: this.email,
         image: this.image,
