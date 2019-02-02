@@ -9,7 +9,7 @@ export async function createUserToken(userId, type) {
     try {
         let user = await getUserById(userId)
         let { phonenumber } = user;
-        let verificationCode = Math.random().toString(36).substring(2, 6);
+        let verificationCode = (Math.floor(Math.random() * 10000) + 10000).toString().substring(1);
 
         let userToken = new UserToken();
         userToken.token = verificationCode
