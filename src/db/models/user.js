@@ -103,6 +103,7 @@ UserSchema.methods.toJSON = function () {
         id: this._id,
         username: this.username,
         email: this.email,
+        phonenumber: this.phonenumber,
         emailVerified: this.emailVerified,
         phoneVerified: this.phoneVerified,
         firstname: this.firstname,
