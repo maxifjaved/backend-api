@@ -22,9 +22,9 @@ let UserSchema = new mongoose.Schema({
     emailVerified: { type: Boolean, default: false },
     phoneVerified: { type: Boolean, default: false },
 
-    postNotification: { type: Boolean, default: false },
-    peerNotification: { type: Boolean, default: false },
-    privateMsgNotification: { type: Boolean, default: false },
+    postNotification: { type: Boolean, default: true },
+    peerNotification: { type: Boolean, default: true },
+    privateMsgNotification: { type: Boolean, default: true },
 
     token: [{ type: mongoose.Schema.Types.ObjectId, ref: 'UserToken' }],
     favorites: [{ type: mongoose.Schema.Types.ObjectId, ref: 'UserPost' }],
@@ -76,7 +76,11 @@ UserSchema.methods.toAuthJSON = function () {
         token: this.generateJWT(),
         image: this.image,
         gender: this.gender,
-        dob: this.dob
+        dob: this.dob,
+        postNotification: this.postNotification,
+        peerNotification: this.peerNotification,
+        privateMsgNotification: this.privateMsgNotification
+
     };
 };
 UserSchema.methods.toProfileJSONFor = function (user) {
@@ -86,7 +90,11 @@ UserSchema.methods.toProfileJSONFor = function (user) {
         email: this.email,
         image: this.image,
         gender: this.gender,
-        dob: this.dob
+        dob: this.dob,
+        postNotification: this.postNotification,
+        peerNotification: this.peerNotification,
+        privateMsgNotification: this.privateMsgNotification
+
     };
 };
 
@@ -101,7 +109,11 @@ UserSchema.methods.toJSON = function () {
         lastname: this.lastname,
         image: this.image,
         gender: this.gender,
-        dob: this.dob
+        dob: this.dob,
+        postNotification: this.postNotification,
+        peerNotification: this.peerNotification,
+        privateMsgNotification: this.privateMsgNotification
+
     };
 };
 

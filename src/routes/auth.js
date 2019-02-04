@@ -64,7 +64,7 @@ router.post('/confirm-phone-verification-code', authenticate, async (req, res, n
 
     try {
         const { id } = req.currentUser
-        const { isValid, errors } = await updateUserToken(req.body);
+        const { isValid, errors } = await updateUserToken(req.body, 'phone-confirmation');
         if (!isValid) { return res.status(500).json({ errors }) }
 
         await updateUserById(id, { phoneVerified: true })
