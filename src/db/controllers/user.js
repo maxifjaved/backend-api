@@ -36,7 +36,7 @@ export async function createNewUser(data) {
 export async function updateUserById(id, data) {
     try {
         let user = await User.findById(id);
-        let { firstname, lastname, image, password, phonenumber, emailVerified, phoneVerified, gender, dob } = data
+        let { firstname, lastname, image, password, phonenumber, emailVerified, phoneVerified, gender, dob, postNotification, peerNotification, privateMsgNotification } = data
 
         user.firstname = firstname || user.firstname;
         user.lastname = lastname || user.lastname;
@@ -56,6 +56,19 @@ export async function updateUserById(id, data) {
         if (typeof phoneVerified !== 'undefined') {
             user.phoneVerified = phoneVerified;
         }
+        if (typeof postNotification !== 'undefined') {
+            user.postNotification = postNotification;
+        }
+
+        if (typeof peerNotification !== 'undefined') {
+            user.peerNotification = peerNotification;
+        }
+
+        if (typeof privateMsgNotification !== 'undefined') {
+            user.privateMsgNotification = privateMsgNotification;
+        }
+
+
 
         await user.save()
         return user;
