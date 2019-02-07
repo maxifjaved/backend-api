@@ -1,6 +1,7 @@
 import mongoose from 'mongoose'
 import moment from 'moment'
 const User = mongoose.model('User');
+const UserGroup = mongoose.model('userGroup');
 
 import { sendConfirmationEmail } from '../../mailer'
 
@@ -23,9 +24,31 @@ export async function createNewUser(data) {
     user.setPassword(password);
 
     try {
-        await sendConfirmationEmail(user);
+        // await sendConfirmationEmail(user);
+
+
         await user.save();
 
+        let userGroup = new UserGroup();
+        userGroup.userId = user._id;
+        userGroup.groupType = 'Public';
+        await userGroup.save();
+
+        let userGroup1 = new UserGroup();
+        userGroup1.userId = user._id;
+        userGroup1.groupType = 'Private';
+        await userGroup1.save();
+
+        let userGroup2 = new UserGroup();
+        userGroup2.userId = user._id;
+        userGroup2.groupType = 'Social';
+        await userGroup2.save();
+
+        user.groupId.push(userGroup._id) 
+        user.groupId.push(userGroup1._id) 
+        user.groupId.push(userGroup2._id) 
+
+        await user.save();
         return user;
     } catch (error) {
         throw new Error(error)

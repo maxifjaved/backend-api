@@ -29,6 +29,7 @@ let UserSchema = new mongoose.Schema({
     token: [{ type: mongoose.Schema.Types.ObjectId, ref: 'UserToken' }],
     favorites: [{ type: mongoose.Schema.Types.ObjectId, ref: 'UserPost' }],
     friends: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
+    groupId: [{ type: mongoose.Schema.Types.ObjectId, ref: 'userGroup' }],
     friendRequests: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }]
 
 }, { timestamps: true });

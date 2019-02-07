@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "dev": "nodemon --watch .env --watch src --exec babel-node src --source-maps",
+    "dev": "nodemon --debug --inspect --watch .env --watch src --exec babel-node src --source-maps",
     "inspect": "nodemon --debug --inspect --watch .env --watch src --exec babel-node src --source-maps",
     "build": "rimraf dist && babel src -D --out-dir dist",
     "prod": "node dist"

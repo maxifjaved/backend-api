@@ -10,3 +10,4 @@ mongoose.connect(DB_URI, { useNewUrlParser: true });
 import './models/user'
 import './models/userToken'
 import './models/userPost'
+import './userGroup'

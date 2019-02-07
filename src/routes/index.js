@@ -6,6 +6,7 @@ import auth from './auth';
 import users from './users';
 import tags from './tags';
 import posts from './posts';
+import group from './groups';
 
 /**
  * Contains all API routes for the application.
@@ -33,5 +34,6 @@ router.use('/auth', auth);
 router.use('/users', users);
 router.use('/tags', tags);
 router.use('/posts', posts);
+router.use('/group', group);
 
 export default router;
