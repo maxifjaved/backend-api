@@ -24,24 +24,24 @@ export async function createNewUser(data) {
     user.setPassword(password);
 
     try {
-        // await sendConfirmationEmail(user);
+        await sendConfirmationEmail(user);
 
 
         await user.save();
 
         let userGroup = new UserGroup();
         userGroup.userId = user._id;
-        userGroup.groupType = 'Public';
+        userGroup.groupTitle = 'Public';
         await userGroup.save();
 
         let userGroup1 = new UserGroup();
         userGroup1.userId = user._id;
-        userGroup1.groupType = 'Private';
+        userGroup1.groupTitle = 'Private';
         await userGroup1.save();
 
         let userGroup2 = new UserGroup();
         userGroup2.userId = user._id;
-        userGroup2.groupType = 'Social';
+        userGroup2.groupTitle = 'Social';
         await userGroup2.save();
 
         user.groupId.push(userGroup._id) 

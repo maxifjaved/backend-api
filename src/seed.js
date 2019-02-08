@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-const UserGroup = require('./db/userGroup')
+const UserGroup = require('./db/models/userGroup')
 //mongo connection
 mongoose.connect('mongodb://127.0.0.1:27017/backend_api')
 

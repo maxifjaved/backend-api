@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import mongoose from 'mongoose';
 
-import { newGroup, groupIdValidation } from '../validations/userGroup'
+import { newGroup, groupIdValidation, newUserGroup } from '../validations/userGroup'
 import authenticate from '../middlewares/authenticate'
 
 const UserGroup = mongoose.model('userGroup');
@@ -10,7 +10,7 @@ const User = mongoose.model('User');
 const router = Router();
 
 
-router.get('/getAllGroups', authenticate, async (req, res, next) => {
+router.get('/get-all-groups', authenticate, async (req, res, next) => {
     var query = {};
     var limit = 20;
     var offset = 0;
@@ -40,7 +40,7 @@ router.get('/getAllGroups', authenticate, async (req, res, next) => {
     })
 });
 
-router.post('/getGroupDetail', authenticate, async (req, res, next) => {
+router.post('/get-group-detail', authenticate, async (req, res, next) => {
     try {
         const { errors, isValid } = await groupIdValidation(req.body)
         if (!isValid) { return res.status(500).json({ errors }) }
@@ -62,7 +62,7 @@ router.post('/getGroupDetail', authenticate, async (req, res, next) => {
 
 });
 
-router.post('/updateGroup', authenticate, async (req, res, next) => {
+router.post('/update-group', authenticate, async (req, res, next) => {
 
     try {
         const { errors, isValid } = await newGroup(req.body)
@@ -90,7 +90,7 @@ router.post('/updateGroup', authenticate, async (req, res, next) => {
 
 
 
-router.get('/getGroupUsers', authenticate, async (req, res, next) => {
+router.get('/get-group-users', authenticate, async (req, res, next) => {
     const { id } = req.currentUser
 
     try {
@@ -104,6 +104,44 @@ router.get('/getGroupUsers', authenticate, async (req, res, next) => {
         return res.status(200).json({ group: group })
     } catch (error) {
         return res.status(500).json({ errors: error.toString() })
+    }
+});
+
+router.post('/create-new-group', authenticate, async (req, res, next) => {
+    try {
+        const { errors, isValid } = await newUserGroup(req.body)
+        if (!isValid) { return res.status(500).json({ errors }) }
+        const { groupTitle, groupMembers } = req.body;
+        const { id } = req.currentUser
+        if (groupMembers.length > 0) {
+
+            let group = new UserGroup();
+            group.groupTitle = groupTitle;
+            group.userId = id;
+
+            for (let i = 0; i < groupMembers.length; i++) {
+                group.groupMembers.push(groupMembers[i])
+            }
+            await group.save();
+
+            return res.status(200).json(group)
+        } else {
+            return res.status(500).json({ errors: 'GroupMembers parameter missing' })
+        }
+    } catch (error) {
+        return res.status(500).json({ errors: { error: error.toString() }, message: 'Oops, something happen bad while proccessing your requset.' })
+    }
+});
+
+router.get('/user-all-groups', authenticate, async (req, res, next) => {
+    try {
+        const { id } = req.currentUser
+
+        let groups = await UserGroup.find({ userId: id })
+
+        return res.status(200).json(groups)
+    } catch (error) {
+        return res.status(500).json({ errors: { error: error.toString() }, message: 'Oops, something happen bad while proccessing your requset.' })
     }
 });
 

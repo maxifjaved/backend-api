@@ -32,3 +32,17 @@ export function groupIdValidation(data) {
     };
 
 }
+
+
+export function newUserGroup(data) {
+    const errors = {};
+
+    if (!data.groupTitle || Validator.isEmpty(data.groupTitle)) {
+        errors.groupTitle = 'This field is required';
+    }
+    return {
+        errors,
+        isValid: isEmpty(errors),
+    };
+
+}
