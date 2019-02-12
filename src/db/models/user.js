@@ -30,7 +30,8 @@ let UserSchema = new mongoose.Schema({
     favorites: [{ type: mongoose.Schema.Types.ObjectId, ref: 'UserPost' }],
     friends: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
     groupId: [{ type: mongoose.Schema.Types.ObjectId, ref: 'userGroup' }],
-    friendRequests: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }]
+    friendRequests: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
+    postId: { type: mongoose.Schema.Types.ObjectId, ref: 'UserPost' }
 
 }, { timestamps: true });
 

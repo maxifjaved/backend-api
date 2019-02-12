@@ -8,6 +8,7 @@ let UserPostSchema = new mongoose.Schema({
     attachment: String,
     favoritesCount: { type: Number, default: 0 },
     // comments: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Comment' }],
+    userIds: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
     tagList: [{ type: String }],
     user: { type: mongoose.Schema.Types.ObjectId, ref: 'User' }
 }, { timestamps: true });
