@@ -217,6 +217,7 @@ export function resetPassword(data) {
 
 }
 
+
 export function resetPasswordPhone(data) {
     const errors = {};
 
@@ -243,6 +244,39 @@ export function resetPasswordPhone(data) {
 
     if (!errors.password && !errors.confirmationPassword && !Validator.equals(data.password, data.confirmationPassword)) {
         errors.confirmationPassword = 'Password not matched.';
+    }
+
+    return {
+        errors,
+        isValid: isEmpty(errors),
+    };
+
+}
+
+
+export function deleteFriendshipRequset(data) {
+    const errors = {};
+
+    if (!data.userId || Validator.isEmpty(data.userId)) {
+        errors.userId = 'This field is required';
+    }
+
+    return {
+        errors,
+        isValid: isEmpty(errors),
+    };
+
+}
+
+export function friendshipRequset(data) {
+    const errors = {};
+
+    if (!data.userId || Validator.isEmpty(data.userId)) {
+        errors.userId = 'This field is required';
+    }
+
+    if (!data.groupId || Validator.isEmpty(data.groupId)) {
+        errors.groupId = 'This field is required';
     }
 
     return {

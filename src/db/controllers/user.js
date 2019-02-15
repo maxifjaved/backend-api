@@ -1,9 +1,9 @@
 import mongoose from 'mongoose'
 import moment from 'moment'
 const User = mongoose.model('User');
-const UserGroup = mongoose.model('userGroup');
+const UserGroup = mongoose.model('Group');
 
-import { sendConfirmationEmail } from '../../mailer'
+import { sendConfirmationEmail } from '../../mailer';
 
 export function getUserByIdentifier(identifier) {
     return User.findOne({ $or: [{ email: identifier.toLowerCase() }, { username: identifier.toLowerCase() }, { phonenumber: identifier }] })
@@ -25,35 +25,32 @@ export async function createNewUser(data) {
 
     try {
         await sendConfirmationEmail(user);
-
-
         await user.save();
 
-        let userGroup = new UserGroup();
-        userGroup.userId = user._id;
-        userGroup.groupTitle = 'Public';
-        await userGroup.save();
+        // let userGroup = new UserGroup();
+        // userGroup.userId = user._id;
+        // userGroup.groupTitle = 'Public';
+        // await userGroup.save();
 
-        let userGroup1 = new UserGroup();
-        userGroup1.userId = user._id;
-        userGroup1.groupTitle = 'Private';
-        await userGroup1.save();
+        // let userGroup1 = new UserGroup();
+        // userGroup1.userId = user._id;
+        // userGroup1.groupTitle = 'Private';
+        // await userGroup1.save();
 
-        let userGroup2 = new UserGroup();
-        userGroup2.userId = user._id;
-        userGroup2.groupTitle = 'Social';
-        await userGroup2.save();
+        // let userGroup2 = new UserGroup();
+        // userGroup2.userId = user._id;
+        // userGroup2.groupTitle = 'Social';
+        // await userGroup2.save();
 
-        user.groupId.push(userGroup._id) 
-        user.groupId.push(userGroup1._id) 
-        user.groupId.push(userGroup2._id) 
+        // user.groupId.push(userGroup._id) 
+        // user.groupId.push(userGroup1._id) 
+        // user.groupId.push(userGroup2._id) 
 
-        await user.save();
+        // await user.save();
         return user;
     } catch (error) {
         throw new Error(error)
     }
-
 }
 
 export async function updateUserById(id, data) {
@@ -90,9 +87,6 @@ export async function updateUserById(id, data) {
         if (typeof privateMsgNotification !== 'undefined') {
             user.privateMsgNotification = privateMsgNotification;
         }
-
-
-
         await user.save()
         return user;
 
@@ -101,10 +95,8 @@ export async function updateUserById(id, data) {
     }
 }
 
-
 export function getUserById(id) {
     return User.findById(id)
-
 }
 
 export function getAllUsers(data) {

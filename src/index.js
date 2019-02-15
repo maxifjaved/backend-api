@@ -113,4 +113,32 @@ process.on('uncaughtException', err => {
     }
 });
 
+// import mongoose from 'mongoose';
+// const UserGroup = mongoose.model('Group');
+
+// (async () => {
+//     try {
+
+//         var data = {
+//             title: 'Public'
+//         }
+//         var data1 = {
+//             title: 'Private'
+//         }
+//         var data2 = {
+//             title: 'Social'
+//         }
+//         var userGroup = new UserGroup(data)
+//         await userGroup.save()
+
+//         userGroup = new UserGroup(data1)
+//         await userGroup.save()
+
+//         userGroup = new UserGroup(data2)
+//         await userGroup.save()
+//     } catch (error) {
+//         console.log(error.toString())
+//     }
+// })();
+
 export default app;

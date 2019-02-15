@@ -4,7 +4,7 @@ import mongoose from 'mongoose';
 import { newGroup, groupIdValidation, newUserGroup } from '../validations/userGroup'
 import authenticate from '../middlewares/authenticate'
 
-const UserGroup = mongoose.model('userGroup');
+const UserGroup = mongoose.model('Group');
 const User = mongoose.model('User');
 
 const router = Router();

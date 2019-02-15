@@ -28,9 +28,9 @@ let UserSchema = new mongoose.Schema({
 
     token: [{ type: mongoose.Schema.Types.ObjectId, ref: 'UserToken' }],
     favorites: [{ type: mongoose.Schema.Types.ObjectId, ref: 'UserPost' }],
-    friends: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
-    groupId: [{ type: mongoose.Schema.Types.ObjectId, ref: 'userGroup' }],
-    friendRequests: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
+    friends: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Friend' }],
+    // groupId: [{ type: mongoose.Schema.Types.ObjectId, ref: 'userGroup' }],
+    // friendRequests: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
     postId: { type: mongoose.Schema.Types.ObjectId, ref: 'UserPost' }
 
 }, { timestamps: true });
@@ -169,7 +169,7 @@ UserSchema.methods.friendshipRequest = function (id) {
 };
 
 UserSchema.methods.removeRequestFriendship = function (id) {
-    this.friendRequests.remove(id);
+    this.friends.remove(id);
     return this.save();
 };
 

@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-const UserGroup = require('./db/models/userGroup')
+const UserGroup = mongoose.model('Group');
 //mongo connection
 mongoose.connect('mongodb://127.0.0.1:27017/backend_api')
 
@@ -14,13 +14,13 @@ db.once('open', function () {
         try {
 
             var data = {
-                groupType: 'Public'
+                title: 'Public'
             }
             var data1 = {
-                groupType: 'Private'
+                title: 'Private'
             }
             var data2 = {
-                groupType: 'Social'
+                title: 'Social'
             }
             var userGroup = new UserGroup(data)
             await userGroup.save()
