@@ -1,11 +1,12 @@
 import { Router } from 'express';
 import mongoose from 'mongoose';
 
-import { newGroup, groupIdValidation, newUserGroup } from '../validations/userGroup'
+import { newGroup, groupIdValidation, newUserGroup, changeGroup } from '../validations/userGroup'
 import authenticate from '../middlewares/authenticate'
 
 const UserGroup = mongoose.model('Group');
 const User = mongoose.model('User');
+const Friend = mongoose.model('Friend');
 
 const router = Router();
 
@@ -145,6 +146,25 @@ router.get('/user-all-groups', authenticate, async (req, res, next) => {
     }
 });
 
+router.post('/change-group', authenticate, async (req, res, next) => {
+    try {
+        const { errors, isValid } = await changeGroup(req.body)
+        if (!isValid) { return res.status(500).json({ errors }) }
 
+        let { userId, groupId } = req.body
+        debugger
+        let friendObj = await Friend.findOne({ friend: userId })
+        if (!friendObj) return res.status(500).json({ message: 'There is no user group with given groupId' })
+        debugger
+        friendObj.group = groupId;
+        await friendObj.save();
+
+        return res.status(200).json({ message: 'User group chenged successfully.' })
+    } catch (error) {
+        return res.status(500).json({ errors: err.toString() })
+    }
+
+
+});
 
 export default router;

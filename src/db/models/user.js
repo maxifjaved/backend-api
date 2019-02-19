@@ -29,7 +29,7 @@ let UserSchema = new mongoose.Schema({
     token: [{ type: mongoose.Schema.Types.ObjectId, ref: 'UserToken' }],
     favorites: [{ type: mongoose.Schema.Types.ObjectId, ref: 'UserPost' }],
     friends: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Friend' }],
-    // groupId: [{ type: mongoose.Schema.Types.ObjectId, ref: 'userGroup' }],
+    referId: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Refer' }],
     // friendRequests: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
     postId: { type: mongoose.Schema.Types.ObjectId, ref: 'UserPost' }
 
