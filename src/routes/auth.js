@@ -10,6 +10,9 @@ import { createUserToken, updateUserToken, deleteUserTokenById } from '../db/con
 import { decodToken, uploader } from '../helper'
 import { sendResetPasswordEmail } from '../mailer'
 // import { findUser, userValidator } from '../validators/userValidator';
+import mongoose from 'mongoose'
+const User = mongoose.model('User')
+const Refer = mongoose.model('Refer')
 
 const router = Router();
 
@@ -20,8 +23,23 @@ router.post('/signup', async (req, res, next) => {
         const { errors, isValid } = await signup(req.body)
         if (!isValid) { return res.status(500).json({ errors }) }
 
-        let user = await createNewUser(req.body)
-        return res.status(200).json({ user: user.toAuthJSON() })
+        let { code, contact } = req.body;
+        if (code && contact) {
+            let userSaved = await User.findOne({ phonenumber: contact })
+            if (userSaved) return res.status(500).json({ message: 'User already exist with this phone number.' })
+
+            let user = await createNewUser(req.body)
+            let refer = await Refer.findOne({ contact: contact }, { code: code })
+            
+            refer.status = true;
+            await refer.save();
+
+            return res.status(200).json({ user: user.toAuthJSON() })
+        } else {
+
+            let user = await createNewUser(req.body)
+            return res.status(200).json({ user: user.toAuthJSON() })
+        }
     } catch (error) {
         return res.status(500).json({ errors: { error: error.toString() }, message: 'Oops, something happen bad while proccessing your requset.' })
     }
