@@ -88,9 +88,6 @@ router.post('/update-group', authenticate, async (req, res, next) => {
         return res.status(500).json({ errors: { error: error.toString() }, message: 'Oops, something happen bad while proccessing your requset.' })
     }
 });
-
-
-
 router.get('/get-group-users', authenticate, async (req, res, next) => {
     const { id } = req.currentUser
 
@@ -152,10 +149,10 @@ router.post('/change-group', authenticate, async (req, res, next) => {
         if (!isValid) { return res.status(500).json({ errors }) }
 
         let { userId, groupId } = req.body
-        debugger
+        
         let friendObj = await Friend.findOne({ friend: userId })
         if (!friendObj) return res.status(500).json({ message: 'There is no user group with given groupId' })
-        debugger
+        
         friendObj.group = groupId;
         await friendObj.save();
 

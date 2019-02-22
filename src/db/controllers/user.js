@@ -21,7 +21,6 @@ export async function createNewUser(data) {
         user.username = username;
         user.email = email;
         user.gender = gender;
-        user.phonenumber = contact;
         user.dob = dob
         user.setPassword(password);
 

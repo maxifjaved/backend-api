@@ -23,13 +23,13 @@ router.post('/signup', async (req, res, next) => {
         const { errors, isValid } = await signup(req.body)
         if (!isValid) { return res.status(500).json({ errors }) }
 
-        let { code, contact } = req.body;
-        if (code && contact) {
-            let userSaved = await User.findOne({ phonenumber: contact })
-            if (userSaved) return res.status(500).json({ message: 'User already exist with this phone number.' })
+        let { referCode } = req.body;
+        if (referCode) {
+            let refer = await Refer.findOne({ referCode: referCode })
+            if (!refer) return res.status(500).json({ message: 'Refer code does not match.' })
 
             let user = await createNewUser(req.body)
-            let refer = await Refer.findOne({ contact: contact }, { code: code })
+            
             
             refer.status = true;
             await refer.save();
