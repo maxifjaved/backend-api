@@ -22,3 +22,17 @@ export function createRefer(data) {
 }
 
 
+export function checkContact(data) {
+    const errors = {};
+
+    if (!data.length > 0 || Validator.isEmpty(data)) {
+        errors = 'Phone number list empty';
+    }
+
+    return {
+        errors,
+        isValid: isEmpty(errors),
+    };
+
+}
+
