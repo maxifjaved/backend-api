@@ -29,8 +29,8 @@ router.post('/signup', async (req, res, next) => {
             if (!refer) return res.status(500).json({ message: 'Refer code does not match.' })
 
             let user = await createNewUser(req.body)
-            
-            
+
+
             refer.status = true;
             await refer.save();
 
@@ -107,6 +107,9 @@ router.post('/login-via-local', (req, res, next) => {
         return res.status(500).json({ errors: { error: error.toString() }, message: 'Oops, something happen bad while proccessing your requset.' })
     }
 })
+
+
+
 
 router.get('/refresh-token', authenticate, async (req, res, next) => {
     const { id } = req.currentUser

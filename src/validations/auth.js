@@ -285,3 +285,22 @@ export function friendshipRequset(data) {
     };
 
 }
+
+export function updatePassword(data) {
+    const errors = {};
+    
+    if (!data.oldPassword || Validator.isEmpty(data.oldPassword)) {
+        errors.oldPassword = 'This field is required';
+    }
+
+    if (!data.newPassword || Validator.isEmpty(data.newPassword)) {
+        errors.newPassword = 'This field is required';
+    }
+
+
+    return {
+        errors,
+        isValid: isEmpty(errors),
+    };
+
+}
