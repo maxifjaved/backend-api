@@ -101,7 +101,7 @@ router.post('/create-refer', authenticate, async (req, res, next) => {
             // }, async (err, message) => {
             //     if (err) return res.status(500).json({ message: "Message not sent. Please verify your number.", error: err });
 
-            return res.status(500).json({ message: "Message sent." });
+            return res.status(500).json({ message: "User already invited." });
             // })
         } else {
             if (contactUser) return res.status(200).json({ message: 'User already exist with this contact.' })
