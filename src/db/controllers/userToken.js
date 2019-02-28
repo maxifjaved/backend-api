@@ -20,6 +20,7 @@ export async function createUserToken(userId, type) {
 
         await userToken.save();
         user.token.push(userToken);
+        // user.phoneVerified = false;
         await user.save();
 
         return user;

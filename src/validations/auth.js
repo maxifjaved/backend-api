@@ -2,9 +2,11 @@ import Validator from 'validator';
 import isEmpty from 'lodash/isEmpty';
 import moment from 'moment';
 
-import { usernameIsValid } from '../helper'
+import { usernameIsValid, verifyUsername } from '../helper'
 
 import * as userController from '../db/controllers/user';
+
+let dateRegx = /[0-9]{4}-(0[1-9]|1[012])-(0[1-9]|1[0-9]|2[0-9]|3[01])/;
 
 export async function signup(data) {
     const errors = {};
@@ -41,7 +43,7 @@ export async function signup(data) {
         errors.dob = 'This field is required';
     }
 
-    if (!errors.dob && !moment(data.dob, 'YYYY-MM-DD').isValid()) {
+    if (!errors.dob && !dateRegx.test(data.dob)) {
         errors.dob = 'Must be a valid date as YYYY-MM-DD';
     }
 
@@ -288,7 +290,7 @@ export function friendshipRequset(data) {
 
 export function updatePassword(data) {
     const errors = {};
-    
+
     if (!data.oldPassword || Validator.isEmpty(data.oldPassword)) {
         errors.oldPassword = 'This field is required';
     }
@@ -303,4 +305,30 @@ export function updatePassword(data) {
         isValid: isEmpty(errors),
     };
 
+}
+
+export function validateUpdateProfile(data) {
+    const errors = {};
+
+    // if (data.username && !usernameIsValid(data.username)) {
+    //     errors.username = 'Only number, letter and _, ., - characters are allowed';
+    // }
+
+    // if (data.username && !errors.username && !Validator.isLength(data.username, { min: 5 })) {
+    //     errors.username = 'Username must be of minimum 5 characters.';
+    // }
+
+    if (data.gender && ['male', 'female', 'other'].indexOf(data.gender) == -1) {
+        errors.gender = 'Gender value must be: male, female or other';
+    }
+
+    if (data.dob && !dateRegx.test(data.dob)) {
+        errors.dob = 'Must be a valid date as YYYY-MM-DD';
+    }
+
+
+    return {
+        errors,
+        isValid: isEmpty(errors),
+    };
 }

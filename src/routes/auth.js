@@ -2,17 +2,17 @@ import { Router } from 'express'
 import passport from "passport"
 
 import authenticate from '../middlewares/authenticate'
-import { signup, phoneVerification, phoneVerificationDB, phoneVerificationCode, login, resetPassword, resetPasswordPhone } from '../validations/auth'
+import {
+    signup, phoneVerification, phoneVerificationDB, phoneVerificationCode,
+    login, resetPassword, resetPasswordPhone, validateUpdateProfile
+} from '../validations/auth'
 import { checkFileType } from '../validations/uploads'
 
 import { createNewUser, updateUserById, getUserById, getUserByIdentifier } from '../db/controllers/user'
 import { createUserToken, updateUserToken, deleteUserTokenById } from '../db/controllers/userToken'
+import { getAllUserGroups } from '../db/controllers/group'
 import { decodToken, uploader } from '../helper'
 import { sendResetPasswordEmail } from '../mailer'
-// import { findUser, userValidator } from '../validators/userValidator';
-import mongoose from 'mongoose'
-const User = mongoose.model('User')
-const Refer = mongoose.model('Refer')
 
 const router = Router();
 
@@ -23,23 +23,8 @@ router.post('/signup', async (req, res, next) => {
         const { errors, isValid } = await signup(req.body)
         if (!isValid) { return res.status(500).json({ errors }) }
 
-        let { referCode } = req.body;
-        if (referCode) {
-            let refer = await Refer.findOne({ referCode: referCode })
-            if (!refer) return res.status(500).json({ message: 'Refer code does not match.' })
-
-            let user = await createNewUser(req.body)
-
-
-            refer.status = true;
-            await refer.save();
-
-            return res.status(200).json({ user: user.toAuthJSON() })
-        } else {
-
-            let user = await createNewUser(req.body)
-            return res.status(200).json({ user: user.toAuthJSON() })
-        }
+        let user = await createNewUser(req.body)
+        return res.status(200).json({ user: user.toAuthJSON() })
     } catch (error) {
         return res.status(500).json({ errors: { error: error.toString() }, message: 'Oops, something happen bad while proccessing your requset.' })
     }
@@ -195,8 +180,8 @@ router.post('/new-password-phone', async (req, res) => {
         if (!isValid) { return res.status(500).json({ errors }) }
         let { password } = req.body
 
-        const tokenDetail = await updateUserToken(req.body, 'phone-reset-password');
-        if (!tokenDetail.isValid) { return res.status(500).json({ errors: tokenDetail }) }
+        const { errors: pError, isValid: pIsValid } = await updateUserToken(req.body, 'phone-reset-password');
+        if (!pIsValid) { return res.status(500).json({ errors: pError }) }
 
         const { userToken } = tokenDetail
         await updateUserById(userToken.user, { password })
@@ -204,7 +189,7 @@ router.post('/new-password-phone', async (req, res) => {
 
         return res.status(200).json({ message: 'Password reset successfully. Login with new password.' })
     } catch (error) {
-        return res.status(500).json({ errors: { error: error.toString() }, message: 'Oops, something happen bad while proccessing your requset.' })
+        return res.status(500).json({ errors: error.toString(), message: 'Oops, something happen bad while proccessing your requset.' })
     }
 });
 
@@ -215,7 +200,8 @@ router.get('/currentUser', authenticate, async (req, res) => {
         let user = await getUserById(id)
         if (!user) { return res.status(500).json({ errors: { message: 'Invalid User Token.' } }) };
 
-        return res.status(200).json({ user: user.toJSON() })
+        let groups = await getAllUserGroups()
+        return res.status(200).json({ user: user.toJSON(), groups })
     } catch (error) {
         return res.status(500).json({ errors: { error: error.toString() }, message: 'Oops, something happen bad while proccessing your requset.' })
     }
@@ -233,6 +219,17 @@ router.patch('/update-user-profile', authenticate, uploader, async (req, res) =>
 
             req.body.image = `/uploads/${photo.filename}`
         }
+
+        let { errors: error1, isValid: isValid1 } = validateUpdateProfile(req.body)
+
+        if (!isValid1) { return res.status(500).json({ errors: error1 }) }
+
+        if (req.body.username) { delete req.body.username }
+        if (req.body.email) { delete req.body.email }
+        if (`${req.body.emailVerified}`) { delete req.body.emailVerified }
+        if (`${req.body.phoneVerified}`) { delete req.body.phoneVerified }
+        if (`${req.body.password}`) { delete req.body.password }
+
 
         await updateUserById(id, req.body)
         let updatedUser = await getUserById(id)

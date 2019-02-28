@@ -1,5 +1,7 @@
 import mongoose from 'mongoose'
 import moment from 'moment'
+import fs from 'fs'
+import path from 'path'
 const User = mongoose.model('User');
 const UserGroup = mongoose.model('Group');
 
@@ -15,37 +17,20 @@ export function isPhoneAssignedToOtherUser(phonenumber, id) {
 
 
 export async function createNewUser(data) {
-    if (data.code) {
-        const { username, email, password, gender, dob, contact } = data;
-        let user = new User();
-        user.username = username;
-        user.email = email;
-        user.gender = gender;
-        user.dob = dob
-        user.setPassword(password);
 
-        try {
-            // await sendConfirmationEmail(user);
-            await user.save();
-            return user;
-        } catch (error) {
-            throw new Error(error)
-        }
-    } else {
-        const { username, email, password, gender, dob } = data;
-        let user = new User();
-        user.username = username;
-        user.email = email;
-        user.gender = gender;
-        user.dob = dob
-        user.setPassword(password);
-        try {
-            // await sendConfirmationEmail(user);
-            await user.save();
-            return user;
-        } catch (error) {
-            throw new Error(error)
-        }
+    const { username, email, password, gender, dob } = data;
+    let user = new User();
+    user.username = username;
+    user.email = email;
+    user.gender = gender;
+    user.dob = dob
+    user.setPassword(password);
+    try {
+        await sendConfirmationEmail(user);
+        await user.save();
+        return user;
+    } catch (error) {
+        throw new Error(error)
     }
 }
 export async function updateUserById(id, data) {
@@ -55,12 +40,21 @@ export async function updateUserById(id, data) {
 
         user.firstname = firstname || user.firstname;
         user.lastname = lastname || user.lastname;
-        user.image = image || user.image;
+        if (image) {
+            let previousImagePath = path.join(__dirname, '/../../../public', user.image);
+            if (fs.existsSync(previousImagePath)) { fs.unlinkSync(previousImagePath); };
+
+            user.image = image;
+        }
 
         user.gender = gender || user.gender;
         user.dob = dob || user.dob;
 
-        user.phonenumber = phonenumber || user.phonenumber;
+
+        if (phonenumber) {
+            user.phoneVerified = false;
+            user.phonenumber = phonenumber || user.phonenumber;
+        }
 
         password ? user.setPassword(password) : null
 

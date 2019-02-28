@@ -7,7 +7,7 @@ export function getUserGroupById(id) {
 
 }
 
-export function getAllUserGroups(data) {
+export function getAllUserGroups() {
     return UserGroup.find({})
 }
 
