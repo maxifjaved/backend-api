@@ -88,8 +88,16 @@ export function getUserById(id) {
     return User.findById(id)
 }
 
-export function getAllUsers(data) {
-    return User.find({})
+export function getAllUsers(query, limit, offset) {
+    return Promise.all([
+        User.find(query)
+            .limit(Number(limit))
+            .skip(Number(offset))
+            .sort({ createdAt: 'desc' })
+            .exec(),
+
+        User.count(query).exec()
+    ])
 }
 
 export function deleteUserById(id) {
