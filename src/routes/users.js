@@ -241,16 +241,18 @@ router.post('/update-password', authenticate, async (req, res, next) => {
     if (!isValid) { return res.status(500).json({ errors }) }
     try {
         const { id } = req.currentUser
-
         const { oldPassword, newPassword } = req.body;
-        let user = await User.findOne({ _id: id }, { password: oldPassword })
-        if (!user) return res.status(500).json({ message: 'User not exist' })
 
+        let user = await User.findOne({ _id: id })
+        if (!user) return res.status(500).json({ message: 'User not exist with given password.' })
+
+        let checkPassword = user.validPassword(oldPassword)
+        if (checkPassword === false) return res.status(500).json({ message: "Given password did not match with user password." })
 
         user.setPassword(newPassword);
         await user.save();
 
-        return res.status(200).json({ message: 'Password updated successfully' }, { user: user })
+        return res.status(200).json({ message: 'Password updated successfully' })
     } catch (error) {
         return res.status(500).json({ errors: { error: error.toString() }, message: 'Oops, something happen bad while proccessing your requset.' })
     }
