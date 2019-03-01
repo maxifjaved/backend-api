@@ -9,6 +9,10 @@ export function isInviteadByUser(phonenumber, user) {
     return Invitation.findOne({ $and: [{ phonenumber: phonenumber }, { user: user }] })
 }
 
+export function getInvitionsByUser(user) {
+    return Invitation.findOne({ user: user })
+}
+
 export function getInvitationById(id) {
     return Invitation.findById(id)
 }

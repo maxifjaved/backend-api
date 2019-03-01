@@ -1,6 +1,9 @@
 import { Router } from 'express';
 import mongoose from 'mongoose'
-import { getInvitationByIdentifier, getAllInvitations, createNewInvitation } from '../db/controllers/invitation'
+import {
+    getInvitationByIdentifier, getAllInvitations, createNewInvitation, isInviteadByUser,
+    getInvitionsByUser
+} from '../db/controllers/invitation'
 import { getUserByIdentifier } from '../db/controllers/user'
 import authenticate from '../middlewares/authenticate'
 import { validateInvitation } from '../validations/invitation'
@@ -42,25 +45,13 @@ router.get('/get-my-invitations', authenticate, async (req, res, next) => {
     if (typeof req.query.offset !== 'undefined') {
         offset = req.query.offset;
     }
-    if (typeof req.query.status !== 'undefined') {
-        query = { ...query, $and: [{ status: status }] };
+
+    try {
+        let results = await getAllInvitations(query, limit, offset)
+        return res.status(200).json({ invitations: results[0], total: results[1] })
+    } catch (error) {
+        return res.status(500).json({ errors: { error: error.toString() }, message: 'Oops, something happen bad while proccessing your requset.' })
     }
-
-    Promise.all([
-        Refer.find(query)
-            .limit(Number(limit))
-            .skip(Number(offset))
-            .sort({ createdAt: 'desc' })
-            .populate('userId')
-            .exec(),
-
-        Refer.count(query).exec(),
-    ]).then(function (results) {
-        var refer = results[0];
-        var referCount = results[1];
-
-        return res.status(200).json({ refer, referCount })
-    })
 })
 
 router.post('/send-invitation', authenticate, async (req, res, next) => {
@@ -74,7 +65,7 @@ router.post('/send-invitation', authenticate, async (req, res, next) => {
         let user = await getUserByIdentifier(phonenumber);
         if (user) { return res.status(500).json({ errors: { phonenumber: 'User already exists in system.' } }) }
 
-        let invited = await getInvitationByIdentifier(phonenumber, id)
+        let invited = await isInviteadByUser(phonenumber, id)
         if (invited) { return res.status(500).json({ errors: { phonenumber: 'Invitation is already sent to this user.' } }) }
 
         if (!invited) {

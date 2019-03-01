@@ -8,7 +8,7 @@ const Group = mongoose.model('Group')
 // import { User } from '../db/models/user';
 import authenticate from '../middlewares/authenticate'
 import { getAllUsers, getUserById, deleteUserById, getUserByIdentifier } from '../db/controllers/user'
-import { getInvitationByIdentifier } from '../db/controllers/invitation'
+import { getInvitationByIdentifier, isInviteadByUser } from '../db/controllers/invitation'
 import { getAllUserGroups, getUserGroupById, deleteGroupById } from '../db/controllers/group'
 import { deleteFriendshipRequset, friendshipRequset, updatePassword } from '../validations/auth'
 import { validateContactList } from '../validations/users'
@@ -40,7 +40,7 @@ router.get('/', authenticate, async (req, res, next) => {
 
 router.post('/get-contacts-detail', authenticate, async (req, res, next) => {
 
-
+    const { id } = req.currentUser;
     try {
         const { errors, isValid } = validateContactList(req.body);
         if (!isValid) { return res.status(500).json({ errors }) };
@@ -57,7 +57,7 @@ router.post('/get-contacts-detail', authenticate, async (req, res, next) => {
             if (user) {
                 users.push(user.toProfileJSONFor());
             } else if (!user) {
-                invitedUser = await getInvitationByIdentifier(contact.phonenumber)
+                invitedUser = await isInviteadByUser(contact.phonenumber, id)
                 if (invitedUser) {
                     invited.push(invitedUser);
                 } else {
