@@ -27,6 +27,10 @@ router.get('/', authenticate, async (req, res, next) => {
         offset = req.query.offset;
     }
 
+    if (typeof req.query.status !== 'undefined' && req.query.status !== '') {
+        query.status = req.query.status;
+    }
+
     try {
         let results = await getAllFriends(query, limit, offset);
         return res.status(200).json({ friends: results[0], total: results[1] })
