@@ -89,6 +89,7 @@ UserSchema.methods.toProfileJSONFor = function (user) {
     return {
         id: this._id,
         username: this.username,
+        phonenumber: this.phonenumber,
         email: this.email,
         image: this.image,
         gender: this.gender,
