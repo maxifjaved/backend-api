@@ -288,7 +288,7 @@ export function friendshipRequset(data) {
 
 }
 
-export function updatePassword(data) {
+export function validateUpdatePasswordRequest(data) {
     const errors = {};
 
     if (!data.oldPassword || Validator.isEmpty(data.oldPassword)) {
@@ -299,6 +299,9 @@ export function updatePassword(data) {
         errors.newPassword = 'This field is required';
     }
 
+    if (!errors.newPassword && !Validator.isLength(data.newPassword, { min: 5 })) {
+        errors.newPassword = 'Password must be of minimum 5 characters.';
+    }
 
     return {
         errors,
@@ -309,14 +312,6 @@ export function updatePassword(data) {
 
 export function validateUpdateProfile(data) {
     const errors = {};
-
-    // if (data.username && !usernameIsValid(data.username)) {
-    //     errors.username = 'Only number, letter and _, ., - characters are allowed';
-    // }
-
-    // if (data.username && !errors.username && !Validator.isLength(data.username, { min: 5 })) {
-    //     errors.username = 'Username must be of minimum 5 characters.';
-    // }
 
     if (data.gender && ['male', 'female', 'other'].indexOf(data.gender) == -1) {
         errors.gender = 'Gender value must be: male, female or other';

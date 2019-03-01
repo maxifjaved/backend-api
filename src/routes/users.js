@@ -10,7 +10,7 @@ import authenticate from '../middlewares/authenticate'
 import { getAllUsers, getUserById, deleteUserById, getUserByIdentifier } from '../db/controllers/user'
 import { getInvitationByIdentifier, isInviteadByUser } from '../db/controllers/invitation'
 import { getAllUserGroups, getUserGroupById, deleteGroupById } from '../db/controllers/group'
-import { deleteFriendshipRequset, friendshipRequset, updatePassword } from '../validations/auth'
+import { deleteFriendshipRequset, friendshipRequset } from '../validations/auth'
 import { validateContactList } from '../validations/users'
 
 const router = Router();
@@ -284,27 +284,7 @@ router.post('/user-friend-list', authenticate, async function (req, res, next) {
     }
 });
 
-router.post('/update-password', authenticate, async (req, res, next) => {
-    const { errors, isValid } = updatePassword(req.body)
-    if (!isValid) { return res.status(500).json({ errors }) }
-    try {
-        const { id } = req.currentUser
-        const { oldPassword, newPassword } = req.body;
 
-        let user = await User.findOne({ _id: id })
-        if (!user) return res.status(500).json({ message: 'User not exist with given password.' })
-
-        let checkPassword = user.validPassword(oldPassword)
-        if (checkPassword === false) return res.status(500).json({ message: "Given password did not match with user password." })
-
-        user.setPassword(newPassword);
-        await user.save();
-
-        return res.status(200).json({ message: 'Password updated successfully' })
-    } catch (error) {
-        return res.status(500).json({ errors: { error: error.toString() }, message: 'Oops, something happen bad while proccessing your requset.' })
-    }
-})
 // get friend request 
 // get is friend list
 

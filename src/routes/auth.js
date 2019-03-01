@@ -4,7 +4,8 @@ import passport from "passport"
 import authenticate from '../middlewares/authenticate'
 import {
     signup, phoneVerification, phoneVerificationDB, phoneVerificationCode,
-    login, resetPassword, resetPasswordPhone, validateUpdateProfile
+    login, resetPassword, resetPasswordPhone, validateUpdateProfile,
+    validateUpdatePasswordRequest
 } from '../validations/auth'
 import { checkFileType } from '../validations/uploads'
 
@@ -163,7 +164,6 @@ router.get('/resetPassword/:identifier', async (req, res) => {
 
 router.post('/new-password-email', async (req, res) => {
     const { token } = req.params;
-    debugger
     try {
         const { errors, isValid } = resetPassword(req.body)
         if (!isValid) { return res.status(500).json({ errors }) }
@@ -179,6 +179,29 @@ router.post('/new-password-email', async (req, res) => {
         return res.status(500).json({ errors: { error: error.toString() }, message: 'Oops, something happen bad while proccessing your requset.' })
     }
 });
+
+router.post('/update-password', authenticate, async (req, res, next) => {
+    const { id } = req.currentUser
+
+    try {
+        const { errors, isValid } = validateUpdatePasswordRequest(req.body)
+        if (!isValid) { return res.status(500).json({ errors }) }
+        const { oldPassword, newPassword } = req.body;
+
+        let user = await getUserById(id)
+
+        let isValidPasswrod = user.validPassword(oldPassword)
+
+        if (isValidPasswrod) {
+            await updateUserById(id, { password: newPassword })
+            return res.status(200).json({ message: 'Password updated successfully' })
+        } else {
+            return res.status(500).json({ message: 'Invalid old password' })
+        }
+    } catch (error) {
+        return res.status(500).json({ errors: { error: error.toString() }, message: 'Oops, something happen bad while proccessing your requset.' })
+    }
+})
 
 router.post('/new-password-phone', async (req, res) => {
 
