@@ -7,7 +7,7 @@ import users from './users';
 import tags from './tags';
 import posts from './posts';
 import group from './groups';
-import refer from './refer';
+import invitations from './invitation';
 
 /**
  * Contains all API routes for the application.
@@ -36,6 +36,6 @@ router.use('/users', users);
 router.use('/tags', tags);
 router.use('/posts', posts);
 router.use('/group', group);
-router.use('/refer', refer);
+router.use('/invitations', invitations);
 
 export default router;
