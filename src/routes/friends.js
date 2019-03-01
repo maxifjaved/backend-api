@@ -4,7 +4,7 @@ import {
     getAllFriends, createNewFriend
 } from '../db/controllers/friend'
 import { isUserExists, getUserById } from '../db/controllers/user'
-import { isFriendExists } from '../db/controllers/friend'
+import { isFriendExists, getFriendByQuery } from '../db/controllers/friend'
 import { isGroupExists, getUserGroupById } from '../db/controllers/group'
 import authenticate from '../middlewares/authenticate'
 import { validateFriend } from '../validations/friends'
@@ -54,8 +54,10 @@ router.post('/invite', authenticate, async (req, res, next) => {
         let group = await getUserGroupById(groupId);
         if (!group) { return res.status(500).json({ errors: { groupId: 'Invalid Group Id' } }) }
 
-        let friends = await getAllFriends({ $and: [{ user: currentUserId }, { friend: friendId }] })
-        if (friends.length) { return res.status(500).json({ errors: { message: 'You already invited this user.', friends: friends[0] } }) }
+        let results = await getAllFriends({ $and: [{ user: currentUserId }, { friend: friendId }] })
+
+        let friends = results[0];
+        if (friends.length) { return res.status(500).json({ errors: { message: 'You already invited this user.', friends: friends } }) }
 
         let result = await createNewFriend({ currentUserId, friendId, groupId })
 
@@ -69,23 +71,43 @@ router.post('/invite', authenticate, async (req, res, next) => {
     } catch (error) {
         return res.status(500).json({ errors: { error: error.toString() }, message: 'Oops, something happen bad while proccessing your requset.' })
     }
-    // var query = { user: id }
-    // var limit = 20;
-    // var offset = 0;
+})
 
-    // if (typeof req.query.limit !== 'undefined') {
-    //     limit = req.query.limit;
-    // }
-    // if (typeof req.query.offset !== 'undefined') {
-    //     offset = req.query.offset;
-    // }
+router.post('/friend', authenticate, async (req, res, next) => {
+    const { id: currentUserId } = req.currentUser
 
-    // try {
-    //     let results = await getAllInvitations(query, limit, offset)
-    //     return res.status(200).json({ invitations: results[0], total: results[1] })
-    // } catch (error) {
-    //     return res.status(500).json({ errors: { error: error.toString() }, message: 'Oops, something happen bad while proccessing your requset.' })
-    // }
+    let { errors, isValid } = validateFriend(req.body);
+    if (!isValid) { return res.status(500).json({ errors }) }
+
+    const { groupId, userId: friendId } = req.body;
+    if (currentUserId == friendId) { return res.status(500).json({ errors: { userId: 'You can\'t add yourself as friend' } }) }
+
+    try {
+        let friend = await getFriendByQuery({ $and: [{ user: currentUserId }, { friend: friendId }, { status: 'friend' }] })
+        if (friend) { return res.status(500).json({ errors: { message: 'You are already friends.' } }) }
+
+
+        let group = await getUserGroupById(groupId);
+        if (!group) { return res.status(500).json({ errors: { groupId: 'Invalid Group Id' } }) }
+
+        let friendRequest = await getFriendByQuery({ $and: [{ user: currentUserId }, { friend: friendId }, { status: 'request' }] })
+        if (!friendRequest) { return res.status(500).json({ errors: { message: 'Not requested from friendship.' } }) }
+
+        let inviteRequest = await getFriendByQuery({ $and: [{ user: friendId, }, { friend: currentUserId }, { status: 'invite' }] })
+        if (!inviteRequest) { return res.status(500).json({ errors: { message: 'Not invited for friendship.' } }) }
+
+
+        friendRequest.group = groupId;
+        friendRequest.status = 'friend';
+        await friendRequest.save();
+
+        inviteRequest.status = 'friend';
+        await inviteRequest.save();
+
+        return res.status(200).json({ message: 'Friend added successfully.', friend: friendRequest });
+    } catch (error) {
+        return res.status(500).json({ errors: { error: error.toString() }, message: 'Oops, something happen bad while proccessing your requset.' })
+    }
 })
 
 export default router;

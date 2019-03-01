@@ -14,19 +14,18 @@ export function getAllFriends(query, limit, offset) {
 }
 
 export function createNewFriend(data) {
-    const { currentUserId, friendId, groudId } = data;
+    const { currentUserId, friendId, groupId } = data;
 
     let myInvitation = new Friend({
         user: currentUserId,
         friend: friendId,
-        group: groudId,
+        group: groupId,
         status: 'invite'
     });
 
     let fRequest = new Friend({
         user: friendId,
         friend: currentUserId,
-        group: groudId,
         status: 'request'
     });
 
@@ -35,6 +34,10 @@ export function createNewFriend(data) {
         fRequest.save()
     ])
 }
+export function getFriendByQuery(query) {
+    return Friend.findOne(query);
+}
+
 
 export function isFriendExists(query) {
     return Friend.count(query);
