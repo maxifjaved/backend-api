@@ -8,9 +8,7 @@ let userGroupSchema = new mongoose.Schema({
 userGroupSchema.methods.toJSON = function () {
     return {
         id: this._id,
-        title: this.title,
-        createdAt: this.createdAt,
-        updatedAt: this.updatedAt,
+        title: this.title
     };
 };
 

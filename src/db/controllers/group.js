@@ -11,6 +11,10 @@ export function getAllUserGroups() {
     return UserGroup.find({})
 }
 
+export function isGroupExists(query) {
+    return UserGroup.count(query);
+}
+
 export function deleteGroupById(id) {
     return UserGroup.remove({ _id: id });
 }

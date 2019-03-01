@@ -99,6 +99,9 @@ export function getAllUsers(query, limit, offset) {
         User.count(query).exec()
     ])
 }
+export function isUserExists(query) {
+    return User.count(query);
+}
 
 export function deleteUserById(id) {
     return User.remove({ _id: id });
