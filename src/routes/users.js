@@ -7,7 +7,8 @@ const Group = mongoose.model('Group')
 // import { Friend } from '../db/models/friend';
 // import { User } from '../db/models/user';
 import authenticate from '../middlewares/authenticate'
-import { getAllUsers, getUserById, deleteUserById } from '../db/controllers/user'
+import { getAllUsers, getUserById, deleteUserById, getUserByIdentifier } from '../db/controllers/user'
+import { getInvitationByIdentifier } from '../db/controllers/invitation'
 import { getAllUserGroups, getUserGroupById, deleteGroupById } from '../db/controllers/group'
 import { deleteFriendshipRequset, friendshipRequset, updatePassword } from '../validations/auth'
 import { validateContactList } from '../validations/users'
@@ -45,34 +46,26 @@ router.post('/get-contacts-detail', authenticate, async (req, res, next) => {
         if (!isValid) { return res.status(500).json({ errors }) };
 
         const { contacts } = req.body
-        console.log(contacts)
+        let users = [];
+        let invited = [];
+        let notfound = [];
 
-        return res.status(200).json({ contacts })
-
-        // const contactList = req.body;
-        // let phonenumberList = [];
-        // for (let i = 0; i < contactList.length; i++) {
-        //     let obj = { name: "", contact: "", status: "", existing: "" }
-
-        //     let name = contactList[i].name
-        //     let contact = contactList[i].contact
-
-        //     let referObject = await Refer.findOne({ $and: [{ name: name }, { contact: contact }] })
-        //     if (referObject) {
-        //         obj.name = name
-        //         obj.contact = contact
-        //         obj.status = referObject.status
-        //         obj.existing = 'user invited'
-        //         phonenumberList.push(obj)
-        //     } else {
-        //         obj.name = name
-        //         obj.contact = contact
-        //         obj.status = 'user not exist'
-        //         obj.existing = 'false'
-        //         phonenumberList.push(obj)
-        //     }
-        // }
-        // return res.status(200).json({ phonenumberList: phonenumberList })
+        let user;
+        let invitedUser;
+        for (const contact of contacts) {
+            user = await getUserByIdentifier(contact.phonenumber)
+            if (user) {
+                users.push(user.toProfileJSONFor());
+            } else if (!user) {
+                invitedUser = await getInvitationByIdentifier(contact.phonenumber)
+                if (invitedUser) {
+                    invited.push(invitedUser);
+                } else {
+                    notfound.push(contact);
+                }
+            }
+        }
+        return res.status(200).json({ users, invited, notfound })
 
     } catch (error) {
         return res.status(500).json({ errors: { error: error.toString() }, message: 'Oops, something happen bad while proccessing your requset.' })

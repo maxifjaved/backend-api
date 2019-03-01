@@ -3,15 +3,11 @@ import isEmpty from 'lodash/isEmpty';
 
 
 
-export function createRefer(data) {
+export function validateInvitation(data) {
     const errors = {};
 
-    if (!data.contact || Validator.isEmpty(data.contact)) {
-        errors.contact = 'This field is required';
-    }
-
-    if (!data.name || Validator.isEmpty(data.name)) {
-        errors.name = 'This field is required';
+    if (!data.phonenumber || Validator.isEmpty(data.phonenumber)) {
+        errors.phonenumber = 'This field is required';
     }
 
     return {

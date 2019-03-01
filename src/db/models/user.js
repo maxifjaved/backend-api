@@ -92,11 +92,7 @@ UserSchema.methods.toProfileJSONFor = function (user) {
         email: this.email,
         image: this.image,
         gender: this.gender,
-        dob: this.dob,
-        postNotification: this.postNotification,
-        peerNotification: this.peerNotification,
-        privateMsgNotification: this.privateMsgNotification
-
+        dob: this.dob
     };
 };
 
