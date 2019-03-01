@@ -53,7 +53,7 @@ UserSchema.methods.generateConfirmationUrl = function () {
 
 UserSchema.methods.generateResetPasswordUrl = function () {
     let token = jwt.sign({ id: this._id }, process.env.RESET_PASSWORD_SECRET, { expiresIn: '1h' });
-    return `${process.env.FRONTEND_URL}/auth/new-password-email/${token}`;
+    return `${process.env.FRONTEND_URL}/auth/resetPassword/${token}`;
 };
 
 UserSchema.methods.generateJWT = function () {

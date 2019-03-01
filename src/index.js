@@ -63,6 +63,10 @@ app.use(json);
 
 // API Routes
 app.use('/api', routes);
+// view engine
+app.set('views', path.join(__dirname, '/../src/views'));
+app.set('view engine', 'ejs')
+
 
 // Swagger UI
 // Workaround for changing the default URL in swagger.json
