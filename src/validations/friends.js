@@ -18,3 +18,16 @@ export function validateFriend(data) {
         isValid: isEmpty(errors),
     };
 }
+
+export function validateDeleteFriendRequest(data) {
+    const errors = {};
+
+    if (!data.userId || Validator.isEmpty(data.userId)) {
+        errors.userId = 'This field is required';
+    }
+
+    return {
+        errors,
+        isValid: isEmpty(errors),
+    };
+}

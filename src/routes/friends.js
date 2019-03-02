@@ -7,7 +7,7 @@ import { isUserExists, getUserById } from '../db/controllers/user'
 import { isFriendExists, getFriendByQuery } from '../db/controllers/friend'
 import { isGroupExists, getUserGroupById } from '../db/controllers/group'
 import authenticate from '../middlewares/authenticate'
-import { validateFriend } from '../validations/friends'
+import { validateFriend, validateDeleteFriendRequest } from '../validations/friends'
 
 const router = Router();
 
@@ -113,5 +113,44 @@ router.post('/friend', authenticate, async (req, res, next) => {
         return res.status(500).json({ errors: { error: error.toString() }, message: 'Oops, something happen bad while proccessing your requset.' })
     }
 })
+
+router.delete('/friend', authenticate, async (req, res, next) => {
+    const { id: currentUserId } = req.currentUser
+
+    let { errors, isValid } = validateDeleteFriendRequest(req.body);
+    if (!isValid) { return res.status(500).json({ errors }) }
+
+    const { userId: friendId } = req.body;
+    if (currentUserId == friendId) { return res.status(500).json({ errors: { userId: 'You can\'t remove yourself from friend list' } }) }
+
+    try {
+        let friend = await getFriendByQuery({ $and: [{ user: currentUserId }, { friend: friendId }] })
+        if (!friend) { return res.status(500).json({ errors: { message: 'Invalid user details.' } }) }
+
+
+        let friendOf = await getFriendByQuery({ $and: [{ user: friendId, }, { friend: currentUserId }] })
+        if (!friendOf) { return res.status(500).json({ errors: { message: 'Invalid user details.' } }) }
+
+        let cuser = await getUserById(currentUserId);
+        let cindex = cuser.friends.indexOf(friend.id);
+
+        let fuser = await getUserById(friendId);
+        if (!fuser) { return res.status(500).json({ errors: { userId: 'Invalid User Id' } }) }
+        let findex = fuser.friends.indexOf(friendOf.id);
+
+        cuser.friends.splice(cindex, 1);
+        await cuser.save();
+
+        fuser.friends.splice(findex, 1);
+        await fuser.save();
+
+        await friend.remove();
+        await friendOf.remove();
+        return res.status(200).json({ message: 'Request proccessed successfully.' });
+    } catch (error) {
+        return res.status(500).json({ errors: { error: error.toString() }, message: 'Oops, something happen bad while proccessing your requset.' })
+    }
+})
+
 
 export default router;
