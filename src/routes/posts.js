@@ -78,7 +78,9 @@ router.post('/', authenticate, uploader, async function (req, res, next) {
         if (userIds) {
             newUserPost.userIds = userIds.split(',').map(s => s.trim())
         }
-        newUserPost.attachment = `/uploads/${attachment.filename}`
+
+        newUserPost.attachmentUrl = attachment.url
+        newUserPost.attachmentPublicId = attachment.public_id
         newUserPost.user = user;
 
 
