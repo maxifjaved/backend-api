@@ -62,6 +62,7 @@ router.post('/', authenticate, uploader, async function (req, res, next) {
         if (!files.length) { return res.status(500).json({ errors: { attachment: 'Video/ Image attachment is required.' } }) }
 
         let attachment = files[0];
+        return res.json({ attachment })
         let attachmentError = isImageOrVideo(attachment)
         if (!attachmentError.isValid) { return res.status(500).json({ errors: attachmentError }) }
 
@@ -79,7 +80,7 @@ router.post('/', authenticate, uploader, async function (req, res, next) {
             newUserPost.userIds = userIds.split(',').map(s => s.trim())
         }
 
-        newUserPost.attachmentUrl = attachment.url
+        newUserPost.attachmentUrl = attachment.secure_url
         newUserPost.attachmentPublicId = attachment.public_id
         newUserPost.user = user;
 
@@ -95,7 +96,7 @@ router.post('/', authenticate, uploader, async function (req, res, next) {
     }
 });
 
-router.get('/user-taged-post', authenticate, uploader, async function (req, res, next) {
+router.get('/user-taged-post', authenticate, async function (req, res, next) {
     const { id } = req.currentUser;
     var query = { userIds: { "$in": id } }
     var limit = 10;
@@ -131,7 +132,7 @@ router.get('/user-taged-post', authenticate, uploader, async function (req, res,
     });
 });
 
-router.get('/user-created-post', authenticate, uploader, async function (req, res, next) {
+router.get('/user-created-post', authenticate, async function (req, res, next) {
     const { id } = req.currentUser;
     var query = { user: id }
     var limit = 10;
