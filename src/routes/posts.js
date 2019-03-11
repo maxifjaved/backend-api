@@ -93,7 +93,7 @@ router.post('/', authenticate, uploader, async function (req, res, next) {
     }
 });
 
-router.get('/user-taged-post', authenticate, uploader, async function (req, res, next) {
+router.get('/taged-post', authenticate, uploader, async function (req, res, next) {
     const { id } = req.currentUser;
     var query = { userIds: { "$in": id } }
     var limit = 10;
@@ -129,7 +129,7 @@ router.get('/user-taged-post', authenticate, uploader, async function (req, res,
     });
 });
 
-router.get('/user-created-post', authenticate, uploader, async function (req, res, next) {
+router.get('/my', authenticate, uploader, async function (req, res, next) {
     const { id } = req.currentUser;
     var query = { user: id }
     var limit = 10;
