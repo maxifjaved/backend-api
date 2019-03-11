@@ -33,6 +33,7 @@
     "serve-favicon": "^2.5.0",
     "swagger-ui-express": "^4.0.2",
     "twilio": "^3.28.1",
+    "validator": "^10.11.0",
     "winston": "^3.1.0",
     "winston-daily-rotate-file": "^3.5.1"
   },
