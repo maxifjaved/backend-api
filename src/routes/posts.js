@@ -78,7 +78,9 @@ router.post('/', authenticate, uploader, async function (req, res, next) {
         if (userIds) {
             newUserPost.userIds = userIds.split(',').map(s => s.trim())
         }
-        newUserPost.attachment = `/uploads/${attachment.filename}`
+
+        newUserPost.attachmentUrl = attachment.secure_url
+        newUserPost.attachmentPublicId = attachment.public_id
         newUserPost.user = user;
 
 
@@ -130,6 +132,7 @@ router.get('/taged-post', authenticate, uploader, async function (req, res, next
 });
 
 router.get('/my', authenticate, uploader, async function (req, res, next) {
+
     const { id } = req.currentUser;
     var query = { user: id }
     var limit = 10;

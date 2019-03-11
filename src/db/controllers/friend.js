@@ -4,6 +4,8 @@ const Friend = mongoose.model('Friend')
 export function getAllFriends(query, limit, offset) {
     return Promise.all([
         Friend.find(query)
+            .populate('friend')
+            .populate('group')
             .limit(Number(limit))
             .skip(Number(offset))
             .sort({ createdAt: 'desc' })

@@ -74,6 +74,7 @@ UserSchema.methods.toAuthJSON = function () {
         email: this.email,
         emailVerified: this.emailVerified,
         phoneVerified: this.phoneVerified,
+        phonenumber: this.phonenumber,
         fullname: this.fullname(),
         token: this.generateJWT(),
         image: this.image,

@@ -1,7 +1,5 @@
 import { Router } from 'express';
 
-import swaggerSpec from '../utils/swagger';
-
 import auth from './auth';
 import users from './users';
 import tags from './tags';
@@ -14,13 +12,6 @@ import friends from './friends';
  * Contains all API routes for the application.
  */
 const router = Router();
-
-/**
- * GET /api/swagger.json
- */
-router.get('/swagger.json', (req, res) => {
-    res.json(swaggerSpec);
-});
 
 /**
  * GET /api

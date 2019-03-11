@@ -1,0 +1,1278 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "version": "1.0",
+    "title": "Weynon_V2",
+    "description": "Welcome to Weynon Api",
+    "contact": {}
+  },
+  "host": "178.79.177.139:8848/api",
+  "basePath": "/",
+  "securityDefinitions": {
+    "auth": {
+      "type": "oauth2",
+      "flow": "implicit",
+      "authorizationUrl": "http://178.79.177.139:8848/api",
+      "scopes": {}
+    }
+  },
+  "schemes": [
+    "http"
+  ],
+  "consumes": [
+    "application/json"
+  ],
+  "produces": [
+    "application/json"
+  ],
+  "paths": {
+    "/auth/signup": {
+      "post": {
+        "description": "TODO: Add Description",
+        "summary": "Signup",
+        "tags": [
+          "Auth"
+        ],
+        "operationId": "AuthSignupPost",
+        "deprecated": false,
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "Content-Type",
+            "in": "header",
+            "required": true,
+            "type": "string",
+            "description": ""
+          },
+          {
+            "name": "Body",
+            "in": "body",
+            "required": true,
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/SignupRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "headers": {}
+          }
+        },
+        "security": [
+          {
+            "auth": []
+          }
+        ]
+      }
+    },
+    "/auth/currentUser": {
+      "get": {
+        "description": "TODO: Add Description",
+        "summary": "Get Current User",
+        "tags": [
+          "Auth"
+        ],
+        "operationId": "AuthCurrentUserGet",
+        "deprecated": false,
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "headers": {}
+          }
+        },
+        "security": [
+          {
+            "auth": []
+          }
+        ]
+      }
+    },
+    "/auth/send-phone-verification-code": {
+      "post": {
+        "description": "TODO: Add Description",
+        "summary": "Send Phone Verification Code",
+        "tags": [
+          "Auth"
+        ],
+        "operationId": "AuthSendPhoneVerificationCodePost",
+        "deprecated": false,
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "Content-Type",
+            "in": "header",
+            "required": true,
+            "type": "string",
+            "description": ""
+          },
+          {
+            "name": "Body",
+            "in": "body",
+            "required": true,
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/SendPhoneVerificationCodeRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "headers": {}
+          }
+        },
+        "security": [
+          {
+            "auth": []
+          }
+        ]
+      }
+    },
+    "/auth/confirm-phone-verification-code": {
+      "post": {
+        "description": "TODO: Add Description",
+        "summary": "Confirm Phone Verification Code",
+        "tags": [
+          "Auth"
+        ],
+        "operationId": "AuthConfirmPhoneVerificationCodePost",
+        "deprecated": false,
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "Content-Type",
+            "in": "header",
+            "required": true,
+            "type": "string",
+            "description": ""
+          },
+          {
+            "name": "Body",
+            "in": "body",
+            "required": true,
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/ConfirmPhoneVerificationCodeRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "headers": {}
+          }
+        },
+        "security": [
+          {
+            "auth": []
+          }
+        ]
+      }
+    },
+    "/auth/resend-phone-verification-code": {
+      "get": {
+        "description": "TODO: Add Description",
+        "summary": "Resend Phone Verification Code",
+        "tags": [
+          "Auth"
+        ],
+        "operationId": "AuthResendPhoneVerificationCodeGet",
+        "deprecated": false,
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "Content-Type",
+            "in": "header",
+            "required": true,
+            "type": "string",
+            "description": ""
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "headers": {}
+          }
+        },
+        "security": [
+          {
+            "auth": []
+          }
+        ]
+      }
+    },
+    "/auth/login-via-local": {
+      "post": {
+        "description": "TODO: Add Description",
+        "summary": "Login Via Local",
+        "tags": [
+          "Auth"
+        ],
+        "operationId": "AuthLoginViaLocalPost",
+        "deprecated": false,
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "Content-Type",
+            "in": "header",
+            "required": true,
+            "type": "string",
+            "description": ""
+          },
+          {
+            "name": "Body",
+            "in": "body",
+            "required": true,
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/LoginViaLocalRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "headers": {}
+          }
+        },
+        "security": [
+          {
+            "auth": []
+          }
+        ]
+      }
+    },
+    "/auth/refresh-token": {
+      "get": {
+        "description": "TODO: Add Description",
+        "summary": "Refresh Token",
+        "tags": [
+          "Auth"
+        ],
+        "operationId": "AuthRefreshTokenGet",
+        "deprecated": false,
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "Content-Type",
+            "in": "header",
+            "required": true,
+            "type": "string",
+            "description": ""
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "headers": {}
+          }
+        },
+        "security": [
+          {
+            "auth": []
+          }
+        ]
+      }
+    },
+    "/auth/send-reset-password-email/+923324647331": {
+      "get": {
+        "description": "The last parameter is `identifier` to which email/username you want to send email.\n\nSo complete request is `/auth/send-reset-password-email/:identifier`\n\nexample request is\n\n\n`/auth/send-reset-password-email/axif.javed`\n\n`/auth/send-reset-password-email/axif.javed@gmail.com`\n\n`/auth/send-reset-password-email/+923324647331`\n",
+        "summary": "Send Reset Password Email",
+        "tags": [
+          "Auth"
+        ],
+        "operationId": "AuthSendResetPasswordEmail923324647331Get",
+        "deprecated": false,
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "Content-Type",
+            "in": "header",
+            "required": true,
+            "type": "string",
+            "description": ""
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "headers": {}
+          }
+        },
+        "security": [
+          {
+            "auth": []
+          }
+        ]
+      }
+    },
+    "/auth/send-reset-password-token-to-phone/+923324647331": {
+      "get": {
+        "description": "The last parameter is `identifier` to which email/username you want to send email.\n\nSo complete request is `/auth/send-reset-password-email/:identifier`\n\nexample request is\n\n`/auth/send-reset-password-email/+923324647331`\n\n`/auth/send-reset-password-email/axif.javed`\n\n`/auth/send-reset-password-email/axif.javed@gmail.com`",
+        "summary": "Send Reset Password Token To Phone",
+        "tags": [
+          "Auth"
+        ],
+        "operationId": "AuthSendResetPasswordTokenToPhone923324647331Get",
+        "deprecated": false,
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "Content-Type",
+            "in": "header",
+            "required": true,
+            "type": "string",
+            "description": ""
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "headers": {}
+          }
+        },
+        "security": [
+          {
+            "auth": []
+          }
+        ]
+      }
+    },
+    "/auth/new-password-phone": {
+      "post": {
+        "description": "TODO: Add Description",
+        "summary": "New Password reset via Phone",
+        "tags": [
+          "Auth"
+        ],
+        "operationId": "AuthNewPasswordPhonePost",
+        "deprecated": false,
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "Content-Type",
+            "in": "header",
+            "required": true,
+            "type": "string",
+            "description": ""
+          },
+          {
+            "name": "Body",
+            "in": "body",
+            "required": true,
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/NewPasswordresetviaPhoneRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "headers": {}
+          }
+        },
+        "security": [
+          {
+            "auth": []
+          }
+        ]
+      }
+    },
+    "/auth/update-user-profile": {
+      "patch": {
+        "description": "TODO: Add Description",
+        "summary": "Update User Profile",
+        "tags": [
+          "Auth"
+        ],
+        "operationId": "AuthUpdateUserProfilePatch",
+        "deprecated": false,
+        "produces": [
+          "application/json"
+        ],
+        "consumes": [
+          "application/x-www-form-urlencoded"
+        ],
+        "parameters": [
+          {
+            "name": "Content-Type",
+            "in": "header",
+            "required": true,
+            "type": "string",
+            "description": ""
+          },
+          {
+            "name": "postNotification",
+            "in": "formData",
+            "required": true,
+            "type": "string",
+            "description": ""
+          },
+          {
+            "name": "peerNotification",
+            "in": "formData",
+            "required": true,
+            "type": "string",
+            "description": ""
+          },
+          {
+            "name": "privateMsgNotification",
+            "in": "formData",
+            "required": true,
+            "type": "string",
+            "description": ""
+          },
+          {
+            "name": "dob",
+            "in": "formData",
+            "required": true,
+            "type": "string",
+            "description": ""
+          },
+          {
+            "name": "gender",
+            "in": "formData",
+            "required": true,
+            "type": "string",
+            "description": ""
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "headers": {}
+          }
+        },
+        "security": [
+          {
+            "auth": []
+          }
+        ]
+      }
+    },
+    "/auth/update-password": {
+      "post": {
+        "description": "TODO: Add Description",
+        "summary": "Update Password",
+        "tags": [
+          "Auth"
+        ],
+        "operationId": "AuthUpdatePasswordPost",
+        "deprecated": false,
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "Content-Type",
+            "in": "header",
+            "required": true,
+            "type": "string",
+            "description": ""
+          },
+          {
+            "name": "Body",
+            "in": "body",
+            "required": true,
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/UpdatePasswordRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "headers": {}
+          }
+        },
+        "security": [
+          {
+            "auth": []
+          }
+        ]
+      }
+    },
+    "/users": {
+      "get": {
+        "description": "TODO: Add Description",
+        "summary": "Get All User in the system",
+        "tags": [
+          "Users"
+        ],
+        "operationId": "UsersGet",
+        "deprecated": false,
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "limit",
+            "in": "query",
+            "required": true,
+            "type": "integer",
+            "format": "int32",
+            "description": ""
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "required": true,
+            "type": "integer",
+            "format": "int32",
+            "description": ""
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "headers": {}
+          }
+        },
+        "security": [
+          {
+            "auth": []
+          }
+        ]
+      }
+    },
+    "/users/get-contacts-detail": {
+      "post": {
+        "description": "TODO: Add Description",
+        "summary": "Contacts Detail",
+        "tags": [
+          "Users"
+        ],
+        "operationId": "UsersGetContactsDetailPost",
+        "deprecated": false,
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "Content-Type",
+            "in": "header",
+            "required": true,
+            "type": "string",
+            "description": ""
+          },
+          {
+            "name": "Body",
+            "in": "body",
+            "required": true,
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/ContactsDetailRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "headers": {}
+          }
+        },
+        "security": [
+          {
+            "auth": []
+          }
+        ]
+      }
+    },
+    "/invitations": {
+      "get": {
+        "description": "TODO: Add Description",
+        "summary": "Get All Invitations",
+        "tags": [
+          "Invitations"
+        ],
+        "operationId": "InvitationsGet",
+        "deprecated": false,
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "limit",
+            "in": "query",
+            "required": true,
+            "type": "integer",
+            "format": "int32",
+            "description": ""
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "required": true,
+            "type": "integer",
+            "format": "int32",
+            "description": ""
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "headers": {}
+          }
+        },
+        "security": [
+          {
+            "auth": []
+          }
+        ]
+      }
+    },
+    "/invitations/send-invitation": {
+      "post": {
+        "description": "TODO: Add Description",
+        "summary": "Send Invitation to user",
+        "tags": [
+          "Invitations"
+        ],
+        "operationId": "InvitationsSendInvitationPost",
+        "deprecated": false,
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "Content-Type",
+            "in": "header",
+            "required": true,
+            "type": "string",
+            "description": ""
+          },
+          {
+            "name": "Body",
+            "in": "body",
+            "required": true,
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/SendInvitationtouserRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "headers": {}
+          }
+        },
+        "security": [
+          {
+            "auth": []
+          }
+        ]
+      }
+    },
+    "/invitations/get-my-invitations": {
+      "get": {
+        "description": "TODO: Add Description",
+        "summary": "Get Invitations send by me",
+        "tags": [
+          "Invitations"
+        ],
+        "operationId": "InvitationsGetMyInvitationsGet",
+        "deprecated": false,
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "headers": {}
+          }
+        },
+        "security": [
+          {
+            "auth": []
+          }
+        ]
+      }
+    },
+    "/friends": {
+      "get": {
+        "description": "TODO: Add Description",
+        "summary": "Get All Friends",
+        "tags": [
+          "Friends"
+        ],
+        "operationId": "FriendsGet",
+        "deprecated": false,
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "limit",
+            "in": "query",
+            "required": true,
+            "type": "integer",
+            "format": "int32",
+            "description": ""
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "required": true,
+            "type": "integer",
+            "format": "int32",
+            "description": ""
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "headers": {}
+          }
+        },
+        "security": [
+          {
+            "auth": []
+          }
+        ]
+      }
+    },
+    "/friends/invite": {
+      "post": {
+        "description": "TODO: Add Description",
+        "summary": "Invite A User For Friendship",
+        "tags": [
+          "Friends"
+        ],
+        "operationId": "FriendsInvitePost",
+        "deprecated": false,
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "Content-Type",
+            "in": "header",
+            "required": true,
+            "type": "string",
+            "description": ""
+          },
+          {
+            "name": "Body",
+            "in": "body",
+            "required": true,
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/InviteAUserForFriendshipRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "headers": {}
+          }
+        },
+        "security": [
+          {
+            "auth": []
+          }
+        ]
+      }
+    },
+    "/friends/friend": {
+      "post": {
+        "description": "TODO: Add Description",
+        "summary": "Confirm Friend Request",
+        "tags": [
+          "Friends"
+        ],
+        "operationId": "FriendsFriendPost",
+        "deprecated": false,
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "Content-Type",
+            "in": "header",
+            "required": true,
+            "type": "string",
+            "description": ""
+          },
+          {
+            "name": "Body",
+            "in": "body",
+            "required": true,
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/ConfirmFriendRequestRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "headers": {}
+          }
+        },
+        "security": [
+          {
+            "auth": []
+          }
+        ]
+      },
+      "delete": {
+        "description": "TODO: Add Description",
+        "summary": "Delete Friend Request/Remove User From Friend List",
+        "tags": [
+          "Friends"
+        ],
+        "operationId": "FriendsFriendDelete",
+        "deprecated": false,
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "Content-Type",
+            "in": "header",
+            "required": true,
+            "type": "string",
+            "description": ""
+          },
+          {
+            "name": "Body",
+            "in": "body",
+            "required": true,
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/DeleteFriendRequest~1RemoveUserFromFriendListRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "headers": {}
+          }
+        },
+        "security": [
+          {
+            "auth": []
+          }
+        ]
+      }
+    },
+    "/friends/change-friend-group": {
+      "patch": {
+        "description": "TODO: Add Description",
+        "summary": "Change Friend Group",
+        "tags": [
+          "Friends"
+        ],
+        "operationId": "FriendsChangeFriendGroupPatch",
+        "deprecated": false,
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "Content-Type",
+            "in": "header",
+            "required": true,
+            "type": "string",
+            "description": ""
+          },
+          {
+            "name": "Body",
+            "in": "body",
+            "required": true,
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/ChangeFriendGroupRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "headers": {}
+          }
+        },
+        "security": [
+          {
+            "auth": []
+          }
+        ]
+      }
+    },
+    "/": {
+      "get": {
+        "description": "This api is just to check, is api is running or not.\nIt should return `app name` and `api version`",
+        "summary": "Api Health Check",
+        "tags": [
+          "Misc"
+        ],
+        "operationId": "UnnammedEndpointGet",
+        "deprecated": false,
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "headers": {}
+          }
+        },
+        "security": [
+          {
+            "auth": []
+          }
+        ]
+      }
+    }
+  },
+  "definitions": {
+    "SignupRequest": {
+      "title": "SignupRequest",
+      "example": {
+        "email": "8axif.javed@gmail.com",
+        "username": "8axif.javed",
+        "gender": "male",
+        "dob": "2018-12-12",
+        "password": "8axif.javed@gmail.com",
+        "confirmationPassword": "8axif.javed@gmail.com"
+      },
+      "type": "object",
+      "properties": {
+        "email": {
+          "type": "string"
+        },
+        "username": {
+          "type": "string"
+        },
+        "gender": {
+          "type": "string"
+        },
+        "dob": {
+          "type": "string"
+        },
+        "password": {
+          "type": "string"
+        },
+        "confirmationPassword": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "email",
+        "username",
+        "gender",
+        "dob",
+        "password",
+        "confirmationPassword"
+      ]
+    },
+    "SendPhoneVerificationCodeRequest": {
+      "title": "SendPhoneVerificationCodeRequest",
+      "example": {
+        "phonenumber": "+923170770556"
+      },
+      "type": "object",
+      "properties": {
+        "phonenumber": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "phonenumber"
+      ]
+    },
+    "ConfirmPhoneVerificationCodeRequest": {
+      "title": "ConfirmPhoneVerificationCodeRequest",
+      "example": {
+        "code": "4944"
+      },
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "code"
+      ]
+    },
+    "LoginViaLocalRequest": {
+      "title": "LoginViaLocalRequest",
+      "example": {
+        "identifier": "axif.javed@gmail.com",
+        "password": "axif.javed@gmail.com"
+      },
+      "type": "object",
+      "properties": {
+        "identifier": {
+          "type": "string"
+        },
+        "password": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "identifier",
+        "password"
+      ]
+    },
+    "NewPasswordresetviaPhoneRequest": {
+      "title": "NewPasswordresetviaPhoneRequest",
+      "example": {
+        "password": "axif.javed@gmail.com",
+        "confirmationPassword": "axif.javed@gmail.com",
+        "code": "3180"
+      },
+      "type": "object",
+      "properties": {
+        "password": {
+          "type": "string"
+        },
+        "confirmationPassword": {
+          "type": "string"
+        },
+        "code": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "password",
+        "confirmationPassword",
+        "code"
+      ]
+    },
+    "UpdatePasswordRequest": {
+      "title": "UpdatePasswordRequest",
+      "example": {
+        "oldPassword": "8axif.javed@gmail.com",
+        "newPassword": "8axif.javed@gmail.com"
+      },
+      "type": "object",
+      "properties": {
+        "oldPassword": {
+          "type": "string"
+        },
+        "newPassword": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "oldPassword",
+        "newPassword"
+      ]
+    },
+    "ContactsDetailRequest": {
+      "title": "ContactsDetailRequest",
+      "example": {
+        "contacts": [
+          {
+            "name": "Muhammad Asif javed",
+            "phonenumber": "+923324647331"
+          },
+          {
+            "name": "Muhammad Asif javed",
+            "phonenumber": "+923320000000"
+          },
+          {
+            "name": "Muhammad Kashif javed",
+            "phonenumber": "+923324647482"
+          },
+          {
+            "name": "Ajlal Khan",
+            "phonenumber": "+923170770556"
+          },
+          {
+            "name": "Foo",
+            "phonenumber": "+923324647331"
+          },
+          {
+            "name": "bar",
+            "phonenumber": "+923320000000"
+          },
+          {
+            "name": "bazzz",
+            "phonenumber": "+923000000000"
+          },
+          {
+            "name": "",
+            "phonenumber": "+923324647332"
+          }
+        ]
+      },
+      "type": "object",
+      "properties": {
+        "contacts": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Contact"
+          }
+        }
+      },
+      "required": [
+        "contacts"
+      ]
+    },
+    "Contact": {
+      "title": "Contact",
+      "type": "object",
+      "properties": {
+        "name": {
+          "example": "Muhammad Asif javed",
+          "type": "string"
+        },
+        "phonenumber": {
+          "example": "+923324647331",
+          "type": "string"
+        }
+      },
+      "required": [
+        "name",
+        "phonenumber"
+      ]
+    },
+    "SendInvitationtouserRequest": {
+      "title": "SendInvitationtouserRequest",
+      "example": {
+        "name": "Muhammad Asif Javed",
+        "phonenumber": "+923324647331"
+      },
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "phonenumber": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "name",
+        "phonenumber"
+      ]
+    },
+    "InviteAUserForFriendshipRequest": {
+      "title": "InviteAUserForFriendshipRequest",
+      "example": {
+        "groupId": "5c7d1eb44b80fa35c0bc776e",
+        "userId": "5c5aae5ce2ecdbbc144ed302"
+      },
+      "type": "object",
+      "properties": {
+        "groupId": {
+          "type": "string"
+        },
+        "userId": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "groupId",
+        "userId"
+      ]
+    },
+    "ConfirmFriendRequestRequest": {
+      "title": "ConfirmFriendRequestRequest",
+      "example": {
+        "groupId": "5c7d1eb54b80fa35c0bc776f",
+        "userId": "5c7d1ed74be10635d449bb29"
+      },
+      "type": "object",
+      "properties": {
+        "groupId": {
+          "type": "string"
+        },
+        "userId": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "groupId",
+        "userId"
+      ]
+    },
+    "DeleteFriendRequest/RemoveUserFromFriendListRequest": {
+      "title": "DeleteFriendRequest/RemoveUserFromFriendListRequest",
+      "example": {
+        "userId": "5c77e390d9dbd2136603a800"
+      },
+      "type": "object",
+      "properties": {
+        "userId": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "userId"
+      ]
+    },
+    "ChangeFriendGroupRequest": {
+      "title": "ChangeFriendGroupRequest",
+      "example": {
+        "groupId": "5c7d1eb54b80fa35c0bc776f",
+        "userId": "5c7d1ed74be10635d449bb29"
+      },
+      "type": "object",
+      "properties": {
+        "groupId": {
+          "type": "string"
+        },
+        "userId": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "groupId",
+        "userId"
+      ]
+    }
+  },
+  "tags": [
+    {
+      "name": "Auth"
+    },
+    {
+      "name": "Users"
+    },
+    {
+      "name": "Invitations"
+    },
+    {
+      "name": "Friends"
+    },
+    {
+      "name": "Misc",
+      "description": ""
+    }
+  ]
+}

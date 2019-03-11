@@ -143,16 +143,16 @@ router.get('/user-all-groups', authenticate, async (req, res, next) => {
     }
 });
 
-router.post('/change-group', authenticate, async (req, res, next) => {
+router.patch('/update-friend-group', authenticate, async (req, res, next) => {
     try {
         const { errors, isValid } = await changeGroup(req.body)
         if (!isValid) { return res.status(500).json({ errors }) }
 
         let { userId, groupId } = req.body
-        
+
         let friendObj = await Friend.findOne({ friend: userId })
         if (!friendObj) return res.status(500).json({ message: 'There is no user group with given groupId' })
-        
+
         friendObj.group = groupId;
         await friendObj.save();
 

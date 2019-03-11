@@ -7,7 +7,7 @@ const Group = mongoose.model('Group')
 // import { Friend } from '../db/models/friend';
 // import { User } from '../db/models/user';
 import authenticate from '../middlewares/authenticate'
-import { getAllUsers, getUserById, deleteUserById, getUserByIdentifier } from '../db/controllers/user'
+import { getAllUsers, getUserById, deleteUserById, getUserByIdentifier, getUserProfileWithFriendshipStatus } from '../db/controllers/user'
 import { getInvitationByIdentifier, isInviteadByUser } from '../db/controllers/invitation'
 import { getAllUserGroups, getUserGroupById, deleteGroupById } from '../db/controllers/group'
 import { deleteFriendshipRequset, friendshipRequset } from '../validations/auth'
@@ -40,7 +40,7 @@ router.get('/', authenticate, async (req, res, next) => {
 
 router.post('/get-contacts-detail', authenticate, async (req, res, next) => {
 
-    const { id } = req.currentUser;
+    const { id: currentUserId } = req.currentUser;
     try {
         const { errors, isValid } = validateContactList(req.body);
         if (!isValid) { return res.status(500).json({ errors }) };
@@ -55,9 +55,27 @@ router.post('/get-contacts-detail', authenticate, async (req, res, next) => {
         for (const contact of contacts) {
             user = await getUserByIdentifier(contact.phonenumber)
             if (user) {
-                users.push(user.toProfileJSONFor());
+                // console.log(user.isFriend(currentUserId))
+                // console.log(await user.populate('friends').execPopulate());
+                let data = await user.populate({ path: 'friends', select: { 'status': 1, 'friend': 1, 'user': 1 }, match: { friend: currentUserId } }).execPopulate();
+                // user.friendShipStatus = data.friends
+                let myUser = JSON.parse(JSON.stringify(user))//Object.assign({}, user);
+                myUser.friendshipStatus = ''
+                if (data.friends.length) {
+                    myUser.friendshipStatus = data.friends[0].status;
+                }
+
+                delete myUser.postNotification;
+                delete myUser.peerNotification;
+                delete myUser.privateMsgNotification;
+                delete myUser.emailVerified;
+                delete myUser.phoneVerified;
+                delete myUser.dob;
+                delete myUser.gender;
+
+                users.push(myUser);
             } else if (!user) {
-                invitedUser = await isInviteadByUser(contact.phonenumber, id)
+                invitedUser = await isInviteadByUser(contact.phonenumber, currentUserId)
                 if (invitedUser) {
                     invited.push(invitedUser);
                 } else {

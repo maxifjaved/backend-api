@@ -247,7 +247,7 @@ router.patch('/update-user-profile', authenticate, uploader, async (req, res) =>
             let { errors, isValid } = checkFileType(photo, 'image')
             if (!isValid) { return res.status(500).json({ errors }) }
 
-            req.body.image = `/uploads/${photo.filename}`
+            req.body.image = photo.secure_url
         }
 
         let { errors: error1, isValid: isValid1 } = validateUpdateProfile(req.body)

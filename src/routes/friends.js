@@ -152,5 +152,33 @@ router.delete('/friend', authenticate, async (req, res, next) => {
     }
 })
 
+router.patch('/change-friend-group', authenticate, async (req, res, next) => {
+    const { id: currentUserId } = req.currentUser
+
+    let { errors, isValid } = validateFriend(req.body);
+    if (!isValid) { return res.status(500).json({ errors }) }
+
+    const { userId: friendId, groupId } = req.body;
+    if (currentUserId == friendId) { return res.status(500).json({ errors: { userId: 'You can\'t update group for yourself.' } }) }
+
+    try {
+        let friend = await getFriendByQuery({ $and: [{ user: currentUserId }, { friend: friendId }] })
+        if (!friend) { return res.status(500).json({ errors: { message: 'Invalid user details.' } }) }
+
+        if (friend.group == groupId) { return res.status(500).json({ errors: { groupId: 'New group and previous group is same.' } }) }
+
+
+        let group = await getUserGroupById(groupId);
+        if (!group) { return res.status(500).json({ errors: { groupId: 'Invalid Group Id' } }) }
+
+        friend.group = groupId;
+        await friend.save()
+
+        return res.status(200).json({ message: 'Friend group updated successfully.' });
+    } catch (error) {
+        return res.status(500).json({ errors: { error: error.toString() }, message: 'Oops, something happen bad while proccessing your requset.' })
+    }
+})
+
 
 export default router;
