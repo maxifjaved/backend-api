@@ -1,6 +1,12 @@
 # Build directory
 dist
 
+# Logs directory
+logs
+
+# node_modules directory
+ node_modules
+
 # Test directory
 test
 
