@@ -1,0 +1,7 @@
+Dear {{name}},
+Below is your reset password link that will be valid for 15 minutes.
+
+{{resetUrl}}
+
+Regards,
+Team

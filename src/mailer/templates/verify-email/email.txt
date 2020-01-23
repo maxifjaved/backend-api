@@ -1,0 +1,7 @@
+Dear {{name}},
+Below is your email verification link that will be valid for 15 minutes.
+
+{{verificationUrl}}
+
+Regards,
+Team

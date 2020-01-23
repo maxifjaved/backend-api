@@ -1,45 +1,58 @@
+import fs from 'fs';
+import path from 'path';
+
 import nodemailer from "nodemailer";
+import handlebars from "handlebars";
 
-const from = '"Api" <axif.javed@gmail.com>';
+import config from '../config/config';
 
-function setup() {
-    return nodemailer.createTransport({
-        host: process.env.EMAIL_HOST,
-        port: process.env.EMAIL_PORT,
-        // secure: process.env.EMAIL_SECURE,
-        auth: {
-            user: process.env.EMAIL_USER,
-            pass: process.env.EMAIL_PASS
-        }
-    });
-}
-const tranport = setup();
+const EMAIL_TEMPLATE_BASE = path.join(__dirname, './templates');
 
+// load template file & inject data => return content with injected data.
+const template = (fileName, data) => {
+    const content = fs.readFileSync(EMAIL_TEMPLATE_BASE + fileName).toString();
+    const inject = handlebars.compile(content);
+    return inject(data);
+};
 
-export async function sendConfirmationEmail(user) {
-    const email = {
-        from,
-        to: user.email,
-        subject: "Welcome - Verify Email",
-        text: `
-    Welcome. Please, confirm your email.
-    ${user.generateConfirmationUrl()}
-    `
+// --------- Email Templates --------- //
+
+export function verificationEmail({ name, email, verificationUrl }) {
+    return {
+        from: `Muhammad Asif Javed - <axif.javed@gmail.com>`,
+        to: `${name} <${email}>`,
+        subject: `√√ Confirm Your Email. √√`,
+        text: template('/verify-email/email.txt', { name, email, verificationUrl }),
+        html: template('/verify-email/email.html', { name, email, verificationUrl })
     };
-
-    return await tranport.sendMail(email);
 }
 
-export async function sendResetPasswordEmail(user) {
-    const email = {
-        from,
-        to: user.email,
-        subject: "Reset Password",
-        text: `
-    To reset password follow this link
-    ${user.generateResetPasswordUrl()}
-    `
+export function forgotPasswordEmail({ name, email, resetUrl }) {
+    return {
+        from: `Muhammad Asif Javed - <axif.javed@gmail.com>`,
+        to: `${name} <${email}>`,
+        subject: `√√ Reset Password Request. √√`,
+        text: template('/forgot-password/email.txt', { name, email, resetUrl }),
+        html: template('/forgot-password/email.html', { name, email, resetUrl })
     };
+}
 
-    return await tranport.sendMail(email);
+
+
+const emailClient = nodemailer.createTransport({
+    host: config.emailHost,
+    port: config.emailPort,
+    secure: config.emailSecure,
+    auth: {
+        user: config.emailUser,
+        pass: config.emailPass
+    }
+});
+
+export function sendEmail(data) {
+    if (!emailClient) {
+        return;
+    }
+
+    return emailClient.sendMail(data);
 }

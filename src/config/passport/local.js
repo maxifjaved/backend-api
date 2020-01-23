@@ -1,22 +1,23 @@
+import mongoose from 'mongoose';
 import passport from 'passport'
 import { Strategy as LocalStrategy } from 'passport-local'
 
-import { getUserByIdentifier } from '../../db/controllers/user';
+const User = mongoose.model('User');
 
 export default passport.use(new LocalStrategy({
     usernameField: 'identifier',
     passwordField: 'password'
 }, async (identifier, password, done) => {
     try {
-        let user = await getUserByIdentifier(identifier);
-        if (!user) return done(null, false, { form: 'Invalid Credentials.' })
+        let user = await User.findByIdentifier(identifier);
+        if (!user) return done(null, false, 'Invalid Credentials.');
 
         if (user && user.validPassword(password)) {
             return done(null, user.toAuthJSON());
         } else {
-            return done(null, false, { form: 'Invalid Credentials.' })
+            return done(null, false, 'Invalid Credentials.');
         }
     } catch (error) {
-        if (err) return done(err)
+        if (error) return done(error)
     }
 }))

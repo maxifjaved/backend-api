@@ -1,6 +1,8 @@
 import config from './config/config'
-import app from './config/express'
+
 import './config/mongoose'
+import './config/passport'
+import app from './config/express'
 
 // module.parent check is required to support mocha watch
 // src: https://github.com/mochajs/mocha/issues/1912
