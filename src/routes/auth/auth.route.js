@@ -3,6 +3,7 @@ import passport from 'passport'
 import * as controller from './auth.controller'
 
 const router = Router();
+
 router
     .post('/signup', controller.signup)
     .post('/login-via-local', controller.login)

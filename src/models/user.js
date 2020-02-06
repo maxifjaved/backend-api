@@ -1,8 +1,8 @@
-import mongoose from 'mongoose'
+import mongoose, { mongo } from 'mongoose'
 import crypto from 'crypto'
 import jwt from 'jsonwebtoken'
 import config from '../config/config';
-import * as mailer from '../mailer'
+// import * as mailer from '../mailer'
 
 let UserSchema = new mongoose.Schema({
     username: { type: String, lowercase: true, unique: true, trim: true, required: true },
@@ -13,11 +13,16 @@ let UserSchema = new mongoose.Schema({
 
     passwordHash: { type: String, },
     passwordSalt: { type: String, },
-
+    
     verified: { type: Boolean, default: false },
 
     emailToken: { type: String, },
-}, { timestamps: true, versionKey: false });
+
+    /** Relationships */
+    // folders: [{type: mongoose.Schema.Types.ObjectId, ref: 'Folder', autopopulate: true }],
+    // files: [{type: mongoose.Schema.Types.ObjectId, ref: 'File', authopopulate: true }],
+
+}, { timestamps: true, versionKey: false, collection: 'User', toObject: {virtuals: true}, toJSON: { virtuals: true } });
 
 /** 
  * =====  Pre save hook =====
@@ -36,17 +41,29 @@ UserSchema.pre('save', async function (next) {
         let token = jwt.sign({ id: this._id }, config.emailConfirmationSecret, { expiresIn: '1h' });
         this.emailToken = token;
         let verificationUrl = `${config.backendUrl}/auth/verify-email/${token}`;
-        let data = mailer.verificationEmail({
-            name: this.fullName || this.username,
-            email: this.email,
-            verificationUrl
-        })
-        await mailer.sendEmail(data);
+        
+        // let data = mailer.verificationEmail({
+        //     name: this.fullName || this.username,
+        //     email: this.email,
+        //     verificationUrl
+        // })
+        // mailer.sendEmail(data);
     }
 
     return next();
 });
 
+UserSchema.virtual('avatarUrl')
+    .set(function(url) {
+        avatar = url + this.avatar;
+        this.set({ avatar });
+    })
+    .get(function() {
+        return this.avatar;
+    });
+
+
+ /** Instance Methods of Schema */
 UserSchema.methods = {
     validPassword: function (password) {
         var hash = crypto.pbkdf2Sync(password, this.passwordSalt, 10000, 512, 'sha512').toString('hex');
@@ -90,12 +107,15 @@ UserSchema.methods = {
             email: this.email,
             verified: this.verified,
             fullName: this.fullName,
-            avatar: this.avatar
-
+            avatar: this.avatar,
+            // folders: this.folders,
+            // files: this.files,
+            avatarUrl: this.avatarUrl
         };
     }
 }
 
+ /** Static Methods of Schema*/
 UserSchema.statics = {
     createNew: async function (data) {
         const { username, email, fullName, password } = data;
@@ -121,6 +141,12 @@ UserSchema.statics = {
         } else {
             throw new Error('Invalid token. Try again later.')
         }
+    },
+
+    getUser: async function (id) {
+        let User = await this.findOne({ _id: id });
+
+        return User;
     }
 
     /**
@@ -138,4 +164,5 @@ UserSchema.statics = {
     //   }
 }
 
+UserSchema.plugin(require('mongoose-autopopulate'));
 mongoose.model('User', UserSchema);

@@ -4,6 +4,7 @@ import passport from "passport"
 const User = mongoose.model('User');
 
 import * as validation from './auth.validation'
+
 export async function signup(req, res, next) {
     const { errors, isValid } = await validation.signup(req.body)
     if (!isValid) { return res.status(500).json({ errors }) }
@@ -15,6 +16,7 @@ export async function signup(req, res, next) {
         return res.status(500).json({ errors: { message: error.toString() } });
     }
 }
+
 export async function login(req, res, next) {
     const { errors, isValid } = await validation.login(req.body)
     if (!isValid) { return res.status(500).json({ errors }) }
@@ -31,6 +33,7 @@ export async function login(req, res, next) {
         return res.status(500).json({ errors: { message: error.toString() } });
     }
 }
+
 export async function verifyEmail(req, res, next) {
     const { token } = req.params;
 
