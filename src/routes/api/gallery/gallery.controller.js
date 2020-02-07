@@ -8,6 +8,8 @@ const Folder = mongoose.model('Folder');
 const User = mongoose.model('User');
 
     /** File Section */
+
+    // TODO: // create directory file
 export async function createFile(req, res, next) {
     const { id } = req.currentUser;
 
@@ -26,8 +28,6 @@ export async function createFile(req, res, next) {
                     id
                 };
                 filecreate = await File.create(detail);
-                
-                // folder.fileId.push(fileAttach.id);
             }
             return res.status(200).json({ payload: filecreate.toJSON(), message: 'File Create Successfully.' });
 
@@ -37,6 +37,7 @@ export async function createFile(req, res, next) {
     }
 }
 
+    // TODO: // rename selected directory file
 export async function renameFile(req, res, next) {
     let fileId = req.params.id;
     let title = req.params.title;
@@ -52,7 +53,8 @@ export async function renameFile(req, res, next) {
     }
 }
 
-export async function getAllUserFiles(req, res, next) {
+    // TODO: // get all directory files of user
+export async function getDirectoryFiles(req, res, next) {
     const { id } = req.currentUser;
 
     const query = { userId: id };
@@ -68,7 +70,7 @@ export async function getAllUserFiles(req, res, next) {
         return res.status(500).json({ errors: { message: e.toString() } });
     }
 }
-
+    // TODO: // delete specific file including link
 export async function deleteFile(req, res, next) {
     let fileId = req.params.id;
  
@@ -79,7 +81,6 @@ export async function deleteFile(req, res, next) {
         if(fs.existsSync(currentPath)){
             fs.unlinkSync(currentPath);
         }
-
         return res.status(200).json({ payload: file.toJSON(), message: 'File remove Successfully.' });
 
     } catch (e) {
@@ -89,6 +90,8 @@ export async function deleteFile(req, res, next) {
 }
 
     /** Folder Section */
+
+    // TODO: // create empty directory folder
 export async function createFolder(req, res, next) {
     const { id } = req.currentUser;
 
@@ -103,6 +106,7 @@ export async function createFolder(req, res, next) {
     }
 }
 
+   // TODO: // rename selected folder
 export async function renameFolder(req, res, next) {
     let folderId = req.params.id;
     let title = req.params.title;
@@ -119,13 +123,14 @@ export async function renameFolder(req, res, next) {
     }
 }
 
+    // TODO: // create subfolder in selected folder
 export async function createSubfolder(req, res, next) {
     let folderId = req.params.id;
 
     try {
         const data = { folderId, title: req.body.title };
 
-        let folder = await Folder.createSubfolder(data);
+        let folder = await Folder.createChildFolder(data);
         return res.status(200).json({ payload: folder.toJSON(), message: 'Sub_Folder Created Successfully.' });
     
     } catch (e) {
@@ -134,11 +139,11 @@ export async function createSubfolder(req, res, next) {
     }
 }
 
+   // TODO: // Insert file in selected folder
 export async function insertFile(req, res, next) {
     let folderId = req.params.id;
 
     try {
-
         let files = req.files;
         let filecreate;
             for (const file of files) {
@@ -151,7 +156,8 @@ export async function insertFile(req, res, next) {
                     type: mimetype,
                     size
                 };
-                filecreate = await Folder.insertFile(detail, folderId);
+                filecreate = await File.create(detail);
+                await Folder.insertFileLinkInFolder(folderId, filecreate.id);
             }
             return res.status(200).json({ payload: filecreate, message: 'File Create Successfully.' });
 
@@ -161,17 +167,19 @@ export async function insertFile(req, res, next) {
     }
 }
 
-export async function getUserFolders(req, res, next) {
+   // TODO: // get User`s directory and folders including files
+export async function getUserFoldersAndFiles(req, res, next) {
     const { id } = req.currentUser;
     let query = { userId: id };
     let limit = 300;
     let offset = 0;
 
     try {
-        let list = await Folder.list(id, limit, offset);
-        console.log(list)
-        // let folders = [...list[0]];
-        return res.status(200).json({ payload: list, message: 'Folder List Retrieved Successfully.' });
+        let list = await Folder.list(query, limit, offset);
+        let list2 = await File.list(query, limit, offset);
+        let folders = [...list[0]];
+        folders[1] = [...list2[0]];
+        return res.status(200).json({ payload: folders, message: 'Folder List Retrieved Successfully.' });
 
     } catch (e) {
     
@@ -179,6 +187,7 @@ export async function getUserFolders(req, res, next) {
     }
 }
 
+    // TODO: //  not used but may be in near future
 export async function deleteAFolderFile(req, res, next) {
     // const { folderId, fileId } = req.params;
 
@@ -192,15 +201,24 @@ export async function deleteAFolderFile(req, res, next) {
         return res.status(500).json({ errors: { message: e.toString() } });
     }
 }
-
+    // TODO: // delete folder including files (NEED Restructuring Any Suggestion will be Highly Appriciated)
 export async function deleteFolder(req, res, next) {
     let folderId = req.params.id;
 
     try {
         let folder = await Folder.removeFolder(folderId);
-        // for (const file of folder.files) {
-        //     file.remove(file.id);
-        // }
+        if(!folder) {
+            return res.status(404).json({ payload: [], message: 'Folder Not Exist.' });
+
+        }
+        for (const file of folder.files) {
+            await File.remove(file.id);
+            let currentPath = path.join(__dirname, '../../../../public',file.path);
+
+            if(fs.existsSync(currentPath)){
+                fs.unlinkSync(currentPath);
+            }
+        }
         return res.status(200).json({ payload: folder.toJSON(), message: 'Folder deleted Successfully.' });
 
     } catch (e) {

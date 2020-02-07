@@ -47,7 +47,7 @@ FileSchema.statics = {
         file.path = data.path;
         file.type = data.type;
         file.size = data.size;
-        file.userId = data.id;
+        data.id ? file.userId = data.id : '';
         await file.save();
 
         return file;
@@ -62,7 +62,7 @@ FileSchema.statics = {
     },
 
     remove: async function(id) {
-        let file = await this.findByIdAndRemove({_id: id});
+        let file = await this.findByIdAndRemove({ _id: id });
         return file;
     },
 

@@ -3,16 +3,9 @@ import mongoose from 'mongoose';
 var FolderSchema = new mongoose.Schema({
 
     title: { type: String ,index: true, required: true, unique: true },
-    // parentId: [{type: mongoose.Schema.Types.ObjectId, ref: 'Folder', autopopulate: true }],
+    parentId: {type: mongoose.Schema.Types.ObjectId, ref: 'Folder', autopopulate: true },
     userId: { type: mongoose.Schema.Types.ObjectId },
-    // files: [{type: mongoose.Schema.Types.ObjectId, ref: 'File', autopopulate: true }]
-    files: [{
-        title: { type: String, required: [true, "title can't be blank"], index: true },
-        name: { type: String, required: [true, "Name can't be blank"], index: true },
-        path: { type: String, required: [true, "path can't be blank"], index: true },
-        type: { type: String, required: [true, "mimetype can't be blank"], index: true },
-        size: { type: Number, required: [true, "Size can't be blank"], index: true },
-    }]
+    files: [{type: mongoose.Schema.Types.ObjectId, ref: 'File', autopopulate: true }]
 
 }, { timestamps: true, versionKey: false, collection: 'Folder' });
 
@@ -53,32 +46,34 @@ FolderSchema.statics = {
         return folder;
     },
 
-    createSubfolder: async function(data) {
+    createChildFolder: async function(data) {
         let folder = new this();
         let parentFolder = await this.findById({ _id: data.folderId });
         folder.title = data.title;
         await folder.save();
-        parentFolder._Ids.push(folder.id);
+        parentFolder.parentId = folder.id;
         await parentFolder.save();
 
         return folder;
     },
 
-    insertFile: async function (detail, id) {
-       let folder = await this.updateOne ({ _id: id }, { $push: { files: detail }});
-//  also can use create method of subdocument array
-//  parent.arrayName.create()
-       return folder;
-    },
+//     insertFile: async function (detail, id) {
+//        let folder = await this.updateOne ({ _id: id }, { $push: { files: detail }});
+// //  also can use create method of subdocument array
+// //  parent.arrayName.create()
+//        return folder;
+//     },
 
-    getFolderDetails: async function(id) {
+    insertFileLinkInFolder: async function(id, fileId) {
         let folder = await this.findById({_id: id});
+        folder.files.push(fileId);
+        await folder.save();
         return folder;
     },
 
     removeAFolderFile: async function(ids) {
         let folder = await this.findById({ _id: ids.folderId });
-        folder.files.pull({ _id: ids.fileId });
+        // folder.files.pull({ _id: ids.fileId });
 //  also can use remove method of subdocument array
 //  parent.arrayName.id().remove()
         await folder.save();
@@ -86,41 +81,22 @@ FolderSchema.statics = {
     },
 
     removeFolder: async function(id) {
-        // let folder = await this.findOneAndRemove({_id: id} ).populate({path: 'files'});
         let folder = await this.findOneAndRemove({_id: id} );
         return folder;
     },
 
     list: async function(query, limit, offset) {
         return Promise.all([
-            this
-            .aggregate([
-                { $match: {
-                    userId: query
-                }},
-                { $unwind: "$files" },
-                { $project: {
-                    userId: '$userId',
-                    title: '$title',
-                    files: {
-                        title: '$files.title',
-                        name: '$files.name',
-                        type: '$files.type',
-                        size: '$files.size',
-                        _id: '$files._id'
-                    }
-                }},
-                { $sort: {size: 1}}
-            ])
+            this.find(query)            
             // .populate({path: 'files', options: { sort: { 'size': 1}} })
             .limit(Number(limit))
             .skip(Number(offset))
             .exec(),
-    
+
             this.estimatedDocumentCount(query).exec()
         ])
     }
 }
 
-// FolderSchema.plugin(require('mongoose-autopopulate'));
+FolderSchema.plugin(require('mongoose-autopopulate'));
 mongoose.model('Folder', FolderSchema);
