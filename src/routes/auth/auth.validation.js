@@ -97,3 +97,26 @@ export async function login(data) {
         throw new Error(error)
     }
 }
+
+export function resetPassword(data) {
+    const errors = {};
+    const { password, confirmPassword } = data;
+
+    if (!password || Validator.isEmpty(password)) {
+        errors.password = 'Password field is required';
+    }
+        if (!errors.password && !Validator.isLength(password, { min: 5 })) {
+            errors.password = 'Password must be of minimum 5 characters.';
+        }
+        if (!confirmPassword || Validator.isEmpty(confirmPassword)) {
+            errors.confirmPassword = 'Confirm Password field is required';
+        }
+    if (!errors.password && !errors.confirmPassword && !Validator.equals(password, confirmPassword)) {
+        errors.confirmPassword = 'Password not matched.';
+    }
+
+    return {
+        errors,
+        isValid: isEmpty(errors),
+    };
+}

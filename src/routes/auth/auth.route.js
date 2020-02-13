@@ -1,14 +1,15 @@
 import { Router } from 'express'
-import passport from 'passport'
-import * as controller from './auth.controller'
+// import passport from 'passport'
+import * as controller from './auth.controller';
 
 const router = Router();
 
 router
     .post('/signup', controller.signup)
     .post('/login-via-local', controller.login)
+    .post('/new-password-email', controller.newPasswordEmail)
     .get('/verify-email/:token', controller.verifyEmail)
-    .get('/forgot-password/:identifier', controller.verifyEmail);
+    .get('/forgot-password/:identifier', controller.forgotPassword);
 
 
 // router.get('/send-reset-password-email/:identifier', async (req, res) => {

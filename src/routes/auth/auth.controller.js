@@ -2,8 +2,7 @@ import mongoose from 'mongoose';
 import passport from "passport"
 
 const User = mongoose.model('User');
-
-import * as validation from './auth.validation'
+import * as validation from './auth.validation';
 
 export async function signup(req, res, next) {
     const { errors, isValid } = await validation.signup(req.body)
@@ -42,5 +41,35 @@ export async function verifyEmail(req, res, next) {
         return res.redirect(redirectUrl);
     } catch (error) {
         return res.status(500).json({ errors: { message: error.toString() } })
+    }
+}
+
+    //TODO: render resetPassowrd page
+export async function forgotPassword(req, res, next) {
+    const { identifier } = req.params;
+
+    try {
+        res.render('resetPassword', { title: 'Reset-Password', identifier });
+    
+    } catch (e) {
+
+        return res.status(500).json({ errors: { message: e.toString() } })
+    }
+
+}
+
+export async function newPasswordEmail(req, res, next) {
+
+    try {
+        const { errors, isValid } = resetPassword(req.body);
+        if (!isValid) { 
+            return res.status(500).json({ message: "All Fields are required", errors });
+        }
+        
+        
+
+    } catch (e) {
+
+        return res.status(500).json({ errors: { message: e.toString() } });
     }
 }
