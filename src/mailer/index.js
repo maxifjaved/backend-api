@@ -37,8 +37,6 @@ export function forgotPasswordEmail({ name, email, resetUrl }) {
     };
 }
 
-
-
 const emailClient = nodemailer.createTransport({
     host: config.emailHost,
     port: config.emailPort,

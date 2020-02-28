@@ -10,9 +10,15 @@ import cookieParser from 'cookie-parser';
 import compression from 'compression';
 
 import config from './config';
+
+    /**Routes */
 import authRoutes from '../routes/auth';
+import apiRoutes from '../routes/api';
+
+
 import json from '../middlewares/json';
 import * as errorHandler from '../middlewares/errorHandler';
+import authenticate from '../middlewares/authenticate';
 
 const app = express();
 if (config.env === 'development') {
@@ -22,6 +28,7 @@ if (config.env === 'development') {
 try {
     fs.existsSync(path.join(__dirname, '/../../public')) || fs.mkdirSync(path.join(__dirname, '/../../public'));
     fs.existsSync(path.join(__dirname, '/../../public/uploads')) || fs.mkdirSync(path.join(__dirname, '/../../public/uploads'));
+    fs.existsSync(path.join(__dirname, '/../../public/gallery')) || fs.mkdirSync(path.join(__dirname, '/../../public/gallery'));
 } catch (err) {
     throw new Error(`Error while creating directories: ${error.message}`);
 }
@@ -41,11 +48,10 @@ app.use(json);
 
 // API Routes
 app.use('/auth', authRoutes);
-// app.use('/api', routes);
+app.use('/api', authenticate, apiRoutes);
 // view engine
 app.set('views', path.join(__dirname, '/../views'));
 app.set('view engine', 'ejs')
-
 
 // Error Middleware
 app.use(errorHandler.genericErrorHandler);

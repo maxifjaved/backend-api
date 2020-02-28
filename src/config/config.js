@@ -53,8 +53,8 @@ const envVarsSchema = Joi.object({
     // Validate the Url to redirect to on social login and verification/password reset.
     FRONTEND_URL: Joi.string().required()
         .description('Frontend Url required for social auth'),
-    BACKEND_URL: Joi.string().required()
-        .description('Frontend Url required for social auth'),
+    // BACKEND_URL: Joi.string().required()
+    //     .description('Frontend Url required for social auth'),
 
 }).unknown()
     .required();

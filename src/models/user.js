@@ -2,7 +2,7 @@ import mongoose from 'mongoose'
 import crypto from 'crypto'
 import jwt from 'jsonwebtoken'
 import config from '../config/config';
-import * as mailer from '../mailer'
+// import * as mailer from '../mailer'
 
 let UserSchema = new mongoose.Schema({
     username: { type: String, lowercase: true, unique: true, trim: true, required: true },
@@ -11,13 +11,25 @@ let UserSchema = new mongoose.Schema({
     fullName: { type: String, },
     avatar: { type: String, default: '/uploads/avatarHolder.png' },
 
+    dob: { type: String, default: 'YYYY-MM-DD' },
+    gender: { type: String, enum: ['Male', 'Female', 'other'] },
+    address: { type: String, default: 'x y z' },
+    // country: { type: String, default: '' },
+    // state: { type: String, default: '' },
+    // city: { type: String, default: '' },
+
     passwordHash: { type: String, },
     passwordSalt: { type: String, },
 
     verified: { type: Boolean, default: false },
-
+    since: { type: Date, default: Date.now },
     emailToken: { type: String, },
-}, { timestamps: true, versionKey: false });
+    token: { type: String },
+    /** Relationships */
+    // folders: [{type: mongoose.Schema.Types.ObjectId, ref: 'Folder', autopopulate: true }],
+    // files: [{type: mongoose.Schema.Types.ObjectId, ref: 'File', authopopulate: true }],
+
+}, { timestamps: true, versionKey: false, collection: 'User', toObject: { virtuals: true }, toJSON: { virtuals: true } });
 
 /** 
  * =====  Pre save hook =====
@@ -50,6 +62,17 @@ UserSchema.pre('save', async function (next) {
     return next();
 });
 
+UserSchema.virtual('avatarUrl')
+    .set(function (url) {
+        avatar = url + this.avatar;
+        this.set({ avatar });
+    })
+    .get(function () {
+        return this.avatar;
+    });
+
+
+/** Instance Methods of Schema */
 UserSchema.methods = {
     validPassword: function (password) {
         var hash = crypto.pbkdf2Sync(password, this.passwordSalt, 10000, 512, 'sha512').toString('hex');
@@ -59,6 +82,17 @@ UserSchema.methods = {
     setPassword: function (password) {
         this.passwordSalt = crypto.randomBytes(16).toString('hex');
         this.passwordHash = crypto.pbkdf2Sync(password, this.passwordSalt, 10000, 512, 'sha512').toString('hex');
+    },
+
+    updateUserProfile: function (data) {
+        const { fullname, username, email, dob, gender, address } = data;
+        this.fullName = fullname;
+        this.username = username;
+        this.email = email;
+        this.dob = dob;
+        this.gender = gender;
+        this.address = address;
+        return this.toJSON();
     },
 
     generateConfirmationUrl: function () {
@@ -77,12 +111,16 @@ UserSchema.methods = {
         }, config.jwtSecret, { expiresIn: '1y' });
     },
 
+    tokenDecode: function (token) {
+        var decodedToken
+    },
+
     toAuthJSON: function () {
         return {
             id: this._id,
             email: this.email,
             verified: this.verified,
-            token: this.generateJWT()
+            token: this.generateJWT(),
         };
     },
 
@@ -93,12 +131,18 @@ UserSchema.methods = {
             email: this.email,
             verified: this.verified,
             fullName: this.fullName,
-            avatar: this.avatar
+            gender: this.gender,
+            address: this.address,
+            avatar: this.avatar,
+            // folders: this.folders,
+            // files: this.files,
+            // avatarUrl: this.avatarUrl,
 
         };
     }
 }
 
+/** Static Methods of Schema*/
 UserSchema.statics = {
     createNew: async function (data) {
         const { username, email, fullName, password } = data;
@@ -106,7 +150,8 @@ UserSchema.statics = {
         user.username = username;
         user.email = email;
         user.fullName = fullName;
-        user.setPassword(password);
+        token: user.generateJWT(),
+            user.setPassword(password);
         await user.save();
         return user;
     },
@@ -124,6 +169,11 @@ UserSchema.statics = {
         } else {
             throw new Error('Invalid token. Try again later.')
         }
+    },
+
+    getUser: async function (id) {
+        let User = await this.findOne({ _id: id });
+        return User;
     }
 
     /**
@@ -141,4 +191,5 @@ UserSchema.statics = {
     //   }
 }
 
+// UserSchema.plugin(require('mongoose-autopopulate'));
 mongoose.model('User', UserSchema);

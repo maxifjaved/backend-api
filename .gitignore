@@ -34,3 +34,4 @@ coverage
 # Vim swp files
 *.swp
 public/uploads/*
+public/gallery/*

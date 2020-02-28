@@ -13,7 +13,7 @@ export default passport.use(new LocalStrategy({
         if (!user) return done(null, false, 'Invalid Credentials.');
 
         if (user && user.validPassword(password)) {
-            return done(null, user.toAuthJSON());
+            return done(null, user.toAuthJSON()); // toJSON()
         } else {
             return done(null, false, 'Invalid Credentials.');
         }
