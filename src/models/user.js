@@ -35,12 +35,15 @@ UserSchema.pre('save', async function (next) {
     if (this.isNew || this.isModified('email')) {
         let token = jwt.sign({ id: this._id }, config.emailConfirmationSecret, { expiresIn: '1h' });
         this.emailToken = token;
+        this.verified = false;
+
         let verificationUrl = `${config.backendUrl}/auth/verify-email/${token}`;
         let data = mailer.verificationEmail({
             name: this.fullName || this.username,
             email: this.email,
             verificationUrl
         })
+        console.log("TCL: data", data)
         await mailer.sendEmail(data);
     }
 
