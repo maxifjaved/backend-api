@@ -3,6 +3,9 @@ logs
 *.log
 npm-debug.log*
 
+# use yarn instad of npm
+package-lock.json
+
 # Dependency directories
 node_modules
 
