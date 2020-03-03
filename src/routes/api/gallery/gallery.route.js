@@ -1,17 +1,17 @@
 import { Router } from 'express';
 import * as controller from './gallery.controller';
-import { uploader } from '../../../helper/index';
+import { uploader } from '../../../utils';
 
 const router = Router();
 
-    /** File Section*/
+/** File Section*/
 router
     .get('/all-files', controller.getDirectoryFiles)
     .post('/create-file', uploader, controller.createFile)
     .patch('/rename-file/:id/:title', controller.renameFile)
     .delete('/remove-file/:id', controller.deleteFile);
 
-    /** Folder Section */
+/** Folder Section */
 router
     .get('/all-folders', controller.getUserFoldersAndFiles)
     .post('/create-folder', controller.createFolder)

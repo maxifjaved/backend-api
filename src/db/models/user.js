@@ -1,8 +1,8 @@
 import mongoose from 'mongoose'
 import crypto from 'crypto'
 import jwt from 'jsonwebtoken'
-import config from '../config/config';
-// import * as mailer from '../mailer'
+import config from '../../config/config'
+import * as mailer from '../../services/mailer'
 
 let UserSchema = new mongoose.Schema({
     username: { type: String, lowercase: true, unique: true, trim: true, required: true },
@@ -11,37 +11,26 @@ let UserSchema = new mongoose.Schema({
     fullName: { type: String, },
     avatar: { type: String, default: '/uploads/avatarHolder.png' },
 
-    dob: { type: String, default: 'YYYY-MM-DD' },
-    gender: { type: String, enum: ['Male', 'Female', 'other'] },
-    address: { type: String, default: 'x y z' },
-    // country: { type: String, default: '' },
-    // state: { type: String, default: '' },
-    // city: { type: String, default: '' },
-
-    passwordHash: { type: String, },
-    passwordSalt: { type: String, },
+    passwordHash: { type: String, required: true },
+    passwordSalt: { type: String, required: true },
 
     verified: { type: Boolean, default: false },
     since: { type: Date, default: Date.now },
     emailToken: { type: String, },
     token: { type: String },
-    /** Relationships */
-    // folders: [{type: mongoose.Schema.Types.ObjectId, ref: 'Folder', autopopulate: true }],
-    // files: [{type: mongoose.Schema.Types.ObjectId, ref: 'File', authopopulate: true }],
-
 }, { timestamps: true, versionKey: false, collection: 'User', toObject: { virtuals: true }, toJSON: { virtuals: true } });
 
-/** 
+/**
  * =====  Pre save hook =====
- * 
+ *
  * It will check if new user is added
  * send him a verification email.
- * 
- * OR
- * 
+ *
+ * ELSE
+ *
  * If user email is changed then update the email
  * and set verify to false and send verification email
- * 
+ *
  */
 UserSchema.pre('save', async function (next) {
     if (this.isNew || this.isModified('email')) {
@@ -55,22 +44,11 @@ UserSchema.pre('save', async function (next) {
             email: this.email,
             verificationUrl
         })
-        console.log("TCL: data", data)
-        await mailer.sendEmail(data);
+        // await mailer.sendEmail(data);
     }
 
     return next();
 });
-
-UserSchema.virtual('avatarUrl')
-    .set(function (url) {
-        avatar = url + this.avatar;
-        this.set({ avatar });
-    })
-    .get(function () {
-        return this.avatar;
-    });
-
 
 /** Instance Methods of Schema */
 UserSchema.methods = {
@@ -134,10 +112,6 @@ UserSchema.methods = {
             gender: this.gender,
             address: this.address,
             avatar: this.avatar,
-            // folders: this.folders,
-            // files: this.files,
-            // avatarUrl: this.avatarUrl,
-
         };
     }
 }
@@ -150,8 +124,7 @@ UserSchema.statics = {
         user.username = username;
         user.email = email;
         user.fullName = fullName;
-        token: user.generateJWT(),
-            user.setPassword(password);
+        user.setPassword(password);
         await user.save();
         return user;
     },
@@ -171,9 +144,8 @@ UserSchema.statics = {
         }
     },
 
-    getUser: async function (id) {
-        let User = await this.findOne({ _id: id });
-        return User;
+    getById: async function (id, options = {}) {
+        return await this.findById(id, options).exec();
     }
 
     /**

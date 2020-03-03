@@ -40,33 +40,31 @@ export async function verifyEmail(req, res, next) {
         let redirectUrl = await User.verifyEmail(token);
         return res.redirect(redirectUrl);
     } catch (error) {
-        return res.status(500).json({ errors: { message: error.toString() } })
+        return res.status(500).json({ message: 'Something happen wrong while verifying your account.', errors: { message: error.toString() } })
     }
 }
 
-    //TODO: render resetPassowrd page
+//TODO: render resetPassowrd page
 export async function forgotPassword(req, res, next) {
     const { identifier } = req.params;
-
     try {
         res.render('resetPassword', { title: 'Reset-Password', identifier });
-    
+
     } catch (e) {
 
         return res.status(500).json({ errors: { message: e.toString() } })
     }
-
 }
 
 export async function newPasswordEmail(req, res, next) {
 
     try {
         const { errors, isValid } = resetPassword(req.body);
-        if (!isValid) { 
+        if (!isValid) {
             return res.status(500).json({ message: "All Fields are required", errors });
         }
-        
-        
+
+
 
     } catch (e) {
 

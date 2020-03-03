@@ -10,15 +10,10 @@ import cookieParser from 'cookie-parser';
 import compression from 'compression';
 
 import config from './config';
+import { validateJSON, ensureLoggedIn } from './middlewares';
 
-    /**Routes */
-import authRoutes from '../routes/auth';
-import apiRoutes from '../routes/api';
-
-
-import json from '../middlewares/json';
-import * as errorHandler from '../middlewares/errorHandler';
-import authenticate from '../middlewares/authenticate';
+/**Routes */
+import { authRoutes, apiRoutes } from '../routes';
 
 const app = express();
 if (config.env === 'development') {
@@ -28,7 +23,6 @@ if (config.env === 'development') {
 try {
     fs.existsSync(path.join(__dirname, '/../../public')) || fs.mkdirSync(path.join(__dirname, '/../../public'));
     fs.existsSync(path.join(__dirname, '/../../public/uploads')) || fs.mkdirSync(path.join(__dirname, '/../../public/uploads'));
-    fs.existsSync(path.join(__dirname, '/../../public/gallery')) || fs.mkdirSync(path.join(__dirname, '/../../public/gallery'));
 } catch (err) {
     throw new Error(`Error while creating directories: ${error.message}`);
 }
@@ -36,26 +30,65 @@ try {
 app.use(favicon(path.join(__dirname, '/../../public', 'favicon.ico')));
 app.use(express.static(path.join(__dirname, '/../../public')));
 
+// Define view engine and static assets
+app.set('views', path.join(__dirname, 'views'));
+app.set('view engine', 'pug');
+//We use pug in /views/ for the mailer views.
+
+
 
 app.use(cors());
+// Define global middleware for our server
 app.use(helmet());
+app.use(helmet.hidePoweredBy());
+app.use(helmet.hsts({ maxAge: 7776000000 }));
+app.use(helmet.frameguard('SAMEORIGIN'));
+app.use(helmet.xssFilter({ setOnOldIE: true }));
+app.use(helmet.noSniff());
+
 app.use(compression());
-app.use(cookieParser());
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
-app.use(errorHandler.bodyParser);
-app.use(json);
+app.use(cookieParser(config.cookieSecret, {
+    httpOnly: true,
+    maxAge: 3600000
+}));
+
+app.use(bodyParser.json({ limit: '50mb' }));
+app.use(bodyParser.urlencoded({ limit: '50mb', extended: true }));
+app.use(validateJSON);
 
 // API Routes
 app.use('/auth', authRoutes);
-app.use('/api', authenticate, apiRoutes);
+app.use('/api', ensureLoggedIn, apiRoutes);
 // view engine
 app.set('views', path.join(__dirname, '/../views'));
 app.set('view engine', 'ejs')
 
-// Error Middleware
-app.use(errorHandler.genericErrorHandler);
-app.use(errorHandler.methodNotAllowed);
+
+/// catch 404 and forward to error handler
+app.use(function (req, res, next) {
+    var err = new Error('Not Found');
+    err.status = 404;
+    next(err);
+});
+
+/// error handlers
+
+// development error handler
+// will print stacktrace
+if (config.env === 'development') {
+    app.use(function (err, req, res, next) {
+        console.log(err.stack);
+        return res.status(err.status || 500).json({ message: 'Unhandled Request.', errors: { message: err.message, error: err } });
+    });
+}
+
+// production error handler
+// no stacktraces leaked to user
+app.use(function (err, req, res, next) {
+    return res.status(err.status || 500).json({ message: 'Unhandled Request.', errors: { message: err.message, error: {} } });
+});
+
+
 
 
 export default app;

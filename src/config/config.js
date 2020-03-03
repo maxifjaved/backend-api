@@ -35,6 +35,8 @@ const envVarsSchema = Joi.object({
     // Secret validations to sign the token for emails and jwt
     JWT_SECRET: Joi.string().required()
         .description('JWT Secret required to sign'),
+    COOKIE_SECRET: Joi.string().required()
+        .description('Cookie Secret required to sign'),
     EMAIL_CONFIRMATION_SECRET: Joi.string().required()
         .description('Email Confirmation Secret required to sign'),
     RESET_PASSWORD_SECRET: Joi.string().required()
@@ -79,6 +81,7 @@ const config = {
     emailSecure: envVars.EMAIL_SECURE,
 
     jwtSecret: envVars.JWT_SECRET,
+    cookieSecret: envVars.COOKIE_SECRET,
     emailConfirmationSecret: envVars.EMAIL_CONFIRMATION_SECRET,
     resetPasswordSecret: envVars.RESET_PASSWORD_SECRET,
 

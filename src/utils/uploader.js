@@ -1,22 +1,9 @@
-// import jwt from 'jsonwebtoken';
 import crypto from 'crypto'
 import path from 'path'
 import multer from 'multer'
 
 const DEFAULT_UPLOAD_PATH = path.join(__dirname, '/../../public/uploads');
 
-
-// export function usernameIsValid(username = '') {
-//     return /^[0-9a-zA-Z_.-_]+$/.test(username);
-// }
-
-// export async function decodToken(token, secrect) {
-//     try {
-//         return await jwt.verify(token, secrect)
-//     } catch (error) {
-//         throw new Error(error)
-//     }
-// }
 
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
@@ -30,4 +17,5 @@ const storage = multer.diskStorage({
     }
 });
 
-export const uploader = multer({ storage }).any();
+const uploader = multer({ storage }).any();
+export default uploader;
