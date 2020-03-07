@@ -1,4 +1,5 @@
+import viewsRoutes from './views';
 import authRoutes from './auth';
 import apiRoutes from './api';
 
-export { authRoutes, apiRoutes }
+export { viewsRoutes, authRoutes, apiRoutes };

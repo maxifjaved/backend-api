@@ -38,6 +38,7 @@ coverage
 *.swp
 public/uploads/*
 public/gallery/*
+public/dist
 
 #Remove .vscode config from gitignore
 !.vscode
