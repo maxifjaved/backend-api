@@ -8,13 +8,12 @@ import favicon from 'serve-favicon';
 import bodyParser from 'body-parser';
 import cookieParser from 'cookie-parser';
 import compression from 'compression';
-const router = express.Router();
 
 import config from './config';
 import { validateJSON, ensureLoggedIn } from './middlewares';
 
 /**Routes */
-import { viewsRoutes, authRoutes, apiRoutes } from '../routes';
+import { authRoutes, apiRoutes } from '../routes';
 
 const app = express();
 if (config.env === 'development') {
@@ -31,10 +30,6 @@ try {
 
 app.use(favicon(path.join(__dirname, '/../../public', 'favicon.ico')));
 app.use(express.static(path.join(__dirname, '/../../public')));
-
-// Define view engine and static assets
-app.set('views', path.join(__dirname, '/../views'));
-app.set('view engine', 'pug');
 
 app.use(cors());
 // Define global middleware for our server
@@ -57,15 +52,9 @@ app.use(bodyParser.json({ limit: '50mb' }));
 app.use(bodyParser.urlencoded({ limit: '50mb', extended: true }));
 app.use(validateJSON);
 
-// View Route
-app.use('/', viewsRoutes);
-
 // API Routes
 app.use('/auth', authRoutes);
 app.use('/api', ensureLoggedIn, apiRoutes);
-// view engine
-// app.set('views', path.join(__dirname, '/../views'));
-// app.set('view engine', 'ejs')
 
 /// catch 404 and forward to error handler
 app.use(function(req, res, next) {
