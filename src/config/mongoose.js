@@ -11,3 +11,6 @@ const options = { useUnifiedTopology: true,
 mongoose.connect(config.mongoUrl, options)
     .then(() => console.log("MongoDB connected [%s]", config.mongoUrl))
     .catch(err => console.log(err.reason));
+
+mongoose.set('useFindAndModify', false);
+

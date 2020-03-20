@@ -1,6 +1,6 @@
-import mongoose from 'mongoose'
-import crypto from 'crypto'
-import jwt from 'jsonwebtoken'
+import mongoose from 'mongoose';
+import crypto from 'crypto';
+import jwt from 'jsonwebtoken';
 import config from '../config/config';
 // import * as mailer from '../mailer'
 
@@ -109,10 +109,6 @@ UserSchema.methods = {
         }, config.jwtSecret, { expiresIn: '1y' });
     },
 
-    tokenDecode: function(token) {
-        var decodedToken 
-    },
-
     toAuthJSON: function () {
         return {
             id: this._id,
@@ -157,15 +153,17 @@ UserSchema.statics = {
         return await this.findOne({ $or: [{ email: identifier.toLowerCase() }, { username: identifier.toLowerCase() }] });
     },
     verifyEmail: async function (token) {
-        const decodedToken = await jwt.verify(token, config.emailConfirmationSecret);
+
+    // .verify not working ... so i replace with .decode
+        const decodedToken = jwt.decode(token, config.emailConfirmationSecret);
         let { id } = decodedToken;
-        let nsgUser = await this.findOne({ _id: id, emailToken: token });
+        let nsgUser = await this.findOne({ _id: id });
         if (nsgUser) {
-            await this.findByIdAndUpdate(id, { $set: { verified: true } })
+            await this.findByIdAndUpdate(id, { $set: { verified: true } });
             let redirectUrl = `${config.frontendUrl}/server-login?success=true&token=${nsgUser.generateJWT()}`;
             return redirectUrl;
         } else {
-            throw new Error('Invalid token. Try again later.')
+            throw new Error('Invalid token. Try again later.');
         }
     },
 

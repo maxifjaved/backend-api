@@ -35,12 +35,11 @@ export async function login(req, res, next) {
 
 export async function verifyEmail(req, res, next) {
     const { token } = req.params;
-
     try {
         let redirectUrl = await User.verifyEmail(token);
         return res.redirect(redirectUrl);
     } catch (error) {
-        return res.status(500).json({ errors: { message: error.toString() } })
+        return res.status(500).json({ errors: { message: error.toString() } });
     }
 }
 
@@ -53,12 +52,13 @@ export async function forgotPassword(req, res, next) {
     
     } catch (e) {
 
-        return res.status(500).json({ errors: { message: e.toString() } })
+        return res.status(500).json({ errors: { message: e.toString() } });
     }
 
 }
 
 export async function newPasswordEmail(req, res, next) {
+    const { token } = req.body;
 
     try {
         const { errors, isValid } = resetPassword(req.body);

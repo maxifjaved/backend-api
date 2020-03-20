@@ -9,8 +9,9 @@ router
     .post('/login-via-local', controller.login)
     .post('/new-password-email', controller.newPasswordEmail)
     .get('/verify-email/:token', controller.verifyEmail)
-    .get('/forgot-password/:identifier', controller.forgotPassword);
-
+    .get('/forgot-password/:identifier', controller.forgotPassword)
+    .post('/new-password-email', controller.newPasswordEmail);
+    
 
 // router.get('/send-reset-password-email/:identifier', async (req, res) => {
 //     const { identifier } = req.params;
