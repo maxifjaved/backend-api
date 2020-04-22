@@ -12,7 +12,7 @@ const User = mongoose.model('User');
     // TODO: // create directory file
 export async function createFile(req, res, next) {
     const { id } = req.currentUser;
-
+    const { data } = req.files[0];
     try {
         let files = req.files;
         let filecreate;

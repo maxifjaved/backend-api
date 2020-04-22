@@ -46,6 +46,8 @@ export async function verifyEmail(req, res, next) {
     //TODO: render resetPassowrd page
 export async function forgotPassword(req, res, next) {
     const { identifier } = req.params;
+    const { id } = req.params;
+    
 
     try {
         res.render('resetPassword', { title: 'Reset-Password', identifier });

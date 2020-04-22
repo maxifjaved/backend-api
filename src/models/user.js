@@ -136,6 +136,29 @@ UserSchema.methods = {
     }
 }
 
+/** Query methods of Schema */
+UserSchema.query = {
+    byID: function(id) {
+        return this.where({_id: id}).lean();
+    },
+    Verified: function() {
+        return this.where({ verified: true }).lean();
+    },
+    byUsername: function(username) {
+        return this.where({ username: username }).lean();
+    },
+    byIdentifier: function(identifier) {
+        return this.where({$or: [
+            { username: identifier.toLowerCase() }, 
+            { fullName: identifier.toLowerCase()},
+            { email: identifier.toLowerCase() }
+        ]}).lean();
+    },
+    getAll: function() {
+        return this.where({}).lean();
+    }
+};
+
  /** Static Methods of Schema*/
 UserSchema.statics = {
     createNew: async function (data) {

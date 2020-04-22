@@ -37,6 +37,38 @@ FileSchema.methods = {
         };
     }
 }
+/**
+ * query methods for File Schema
+ */
+
+FileSchema.query = {
+    byID: function(id) {
+        return this.where({ _id: id }).lean();
+    },
+
+    byUserID: function(userId) {
+        return this.where({ userId: userId }).lean();
+    },
+
+    bySize: function(size) {
+        return this.where({ size: size }).lean();
+    },
+
+    byType: function(type) {
+        return this.where({ type: type }).lean();
+    },
+
+    byIdentifier: function(identifier) {
+        return this.where({ $or: [
+            { name: identifier.toLowerCase()}, 
+            { title: identifier.toLowerCase()}
+        ]});
+    },
+
+    getAll: function() {
+        return this.where({}).lean();
+    }
+}
 
 FileSchema.statics = {
     create: async function(data) {

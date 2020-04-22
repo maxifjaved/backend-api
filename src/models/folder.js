@@ -12,7 +12,7 @@ var FolderSchema = new mongoose.Schema({
 
 FolderSchema.pre('findOneAndRemove', function(){
     console.log('from hook : ',this.files);
-})
+});
 
 FolderSchema.methods = {
     toJSON: function () {
@@ -25,6 +25,31 @@ FolderSchema.methods = {
             createdAt: this.createdAt,
             updatedAt: this.updatedAt,
         };
+    }
+},
+
+/**
+ * Query methods for Folder Schema
+ */
+FolderSchema.query = {
+    byID: function(id) {
+        return this.where({_id: id}).lean();
+    },
+
+    byParentID: function(parentId) {
+        return this.where({ parentId: id }).lean();
+    },
+
+    byUserID: function(userId) {
+        return this.where({ userId: userId }).lean();
+    },
+
+    byTitle: function(title) {
+        return this.where({ title: title }).lean();
+    },
+
+    getAll: function() {
+        return this.where({}).lean();
     }
 }
 
